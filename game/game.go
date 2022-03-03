@@ -3,12 +3,14 @@ package game
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"github.com/krile136/mineSweeper/internal/draw"
 	"github.com/krile136/mineSweeper/scenes/scene"
 	"github.com/krile136/mineSweeper/scenes/title"
 	"github.com/krile136/mineSweeper/store"
 )
 
 type Game struct {
+	resourceLoadedCh chan error
 }
 
 func NewGame() (*Game, error) {
@@ -18,7 +20,20 @@ func NewGame() (*Game, error) {
 	// シーン間共通変数を初期化
 	store.Data.Init()
 
-	game := &Game{}
+	game := &Game{
+		resourceLoadedCh: make(chan error),
+	}
+
+	// 画像リソース読み込み
+	go func() {
+		err := draw.LoadImages()
+		if err != nil {
+			game.resourceLoadedCh <- err
+			return
+		}
+
+		close(game.resourceLoadedCh)
+	}()
 
 	return game, nil
 }
