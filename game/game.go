@@ -5,13 +5,19 @@ import (
 
 	"github.com/krile136/mineSweeper/scenes/scene"
 	"github.com/krile136/mineSweeper/scenes/title"
+	"github.com/krile136/mineSweeper/store"
 )
 
 type Game struct {
 }
 
 func NewGame() (*Game, error) {
+	// 初期画面としてtitle画面を設定
 	scene.Display = &title.Title{}
+
+	// シーン間共通変数を初期化
+	store.Data.Init()
+
 	game := &Game{}
 
 	return game, nil
