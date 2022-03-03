@@ -3,6 +3,8 @@ package title
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/krile136/mineSweeper/scenes/scene"
 )
 
 const id string = "title"
@@ -11,9 +13,9 @@ type Title struct {
 }
 
 func (t *Title) Update() error {
-	// if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-	// 	gameInterface.Scene_id = "ending"
-	// }
+	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+		scene.Id = "mineSweeper"
+	}
 	return nil
 }
 
