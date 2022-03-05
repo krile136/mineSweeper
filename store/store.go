@@ -7,18 +7,20 @@ package store
 var Data Store
 
 type Store struct {
-	MineField MineField
+	MineSweeper MineSweeper
 }
 
 // シーン間共通変数の初期化
 func (s *Store) Init() error {
-	Data.MineField.Rows = 25
-	Data.MineField.Columns = 25
+	Data.MineSweeper.Rows = 20
+	Data.MineSweeper.Columns = 20
+	Data.MineSweeper.BombsNumber = 50
 
 	return nil
 }
 
-type MineField struct {
-	Rows    int
-	Columns int
+type MineSweeper struct {
+	Rows        int
+	Columns     int
+	BombsNumber int
 }

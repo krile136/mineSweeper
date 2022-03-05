@@ -1,6 +1,9 @@
 package game
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/krile136/mineSweeper/internal/draw"
@@ -16,6 +19,8 @@ type Game struct {
 func NewGame() (*Game, error) {
 	// 初期画面としてtitle画面を設定
 	scene.Display = &title.Title{}
+
+	rand.Seed(time.Now().UnixNano())
 
 	// シーン間共通変数を初期化
 	store.Data.Init()
