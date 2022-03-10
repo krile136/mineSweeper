@@ -13,7 +13,7 @@ func main() {
 		panic(err)
 	}
 
-	ebiten.SetWindowSize(320, 240)
+	ebiten.SetWindowSize(640, 640)
 
 	if err := ebiten.RunGame(game); err != nil {
 		panic(err)
