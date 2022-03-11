@@ -44,7 +44,7 @@ func NewGame() (*Game, error) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return 320, 240
+	return 640, 640
 }
 
 func (g *Game) Update() error {
