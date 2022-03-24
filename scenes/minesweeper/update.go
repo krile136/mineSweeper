@@ -33,10 +33,9 @@ func (m *MineSweeper) Update() error {
 	}
 
 	mouse_x, mouse_y := ebiten.CursorPosition()
+	y := mouse_y / blockWidth
+	x := mouse_x / blockWidth
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-		var blockWidth int = 32
-		y := mouse_y / blockWidth
-		x := mouse_x / blockWidth
 		position := y*m.rows + x
 		if inArray(m.bombsPosition, position) {
 			m.field[y][x] = bomb
@@ -50,6 +49,10 @@ func (m *MineSweeper) Update() error {
 				m.searchAround(search_x, search_y)
 			}
 		}
+	}
+
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonRight) {
+		m.placeFlag(x, y)
 	}
 	return nil
 }

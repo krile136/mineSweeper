@@ -11,7 +11,8 @@ type MineSweeper struct {
 }
 
 const (
-	zero = iota
+	blockWidth = 32
+	zero       = iota
 	one
 	two
 	three

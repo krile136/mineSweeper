@@ -25,6 +25,13 @@ func (m *MineSweeper) placeBombs() error {
 	return nil
 }
 
+func (m *MineSweeper) placeFlag(x, y int) error {
+
+	m.field[y][x] = flag
+
+	return nil
+}
+
 // 周りの爆弾の数をカウントし、その数に応じて引数に渡されたマスのフィールドを決定する
 func (m *MineSweeper) searchAround(x, y int) {
 	var bombs int = 0
