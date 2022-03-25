@@ -29,6 +29,9 @@ func NewGame() (*Game, error) {
 		resourceLoadedCh: make(chan error),
 	}
 
+	// レイアウト設定
+	game.Layout(store.Data.Layout.OutsideWidth, store.Data.Layout.OutsideHeight)
+
 	// 画像リソース読み込み
 	go func() {
 		err := draw.LoadImages()
@@ -44,7 +47,7 @@ func NewGame() (*Game, error) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return 640, 640
+	return outsideWidth, outsideHeight
 }
 
 func (g *Game) Update() error {

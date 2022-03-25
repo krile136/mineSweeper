@@ -2,6 +2,7 @@ package minesweeper
 
 import (
 	"log"
+	"math"
 	"math/rand"
 )
 
@@ -106,4 +107,9 @@ func inBetween(min, val, max int) bool {
 	} else {
 		return false
 	}
+}
+
+// float64型の値が最大値と最小値の間に収まるようにする
+func setBetween(min, val, max float64) float64 {
+	return math.Min(max, math.Max(min, val))
 }

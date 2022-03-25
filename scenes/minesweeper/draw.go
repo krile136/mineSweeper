@@ -10,8 +10,8 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	p := 32
 	for i := 0; i < m.rows; i++ {
 		for j := 0; j < m.colomns; j++ {
-			x := (float64(j) + 0.5) * float64(p) * c
-			y := (float64(i) + 0.5) * float64(p) * c
+			x := (float64(j)+0.5)*float64(p)*c + scrollX
+			y := (float64(i)+0.5)*float64(p)*c + scrollY
 			switch m.field[i][j] {
 			case close:
 				draw.Draw(screen, "minesweeper", c, x, y, 0, 0, 0, p, p)

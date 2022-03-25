@@ -7,11 +7,15 @@ package store
 var Data Store
 
 type Store struct {
+	Layout      Layout
 	MineSweeper MineSweeper
 }
 
 // シーン間共通変数の初期化
 func (s *Store) Init() error {
+	Data.Layout.OutsideWidth = 640
+	Data.Layout.OutsideHeight = 640
+
 	Data.MineSweeper.Rows = 20
 	Data.MineSweeper.Columns = 20
 	Data.MineSweeper.BombsNumber = 50
@@ -19,6 +23,10 @@ func (s *Store) Init() error {
 	return nil
 }
 
+type Layout struct {
+	OutsideWidth  int
+	OutsideHeight int
+}
 type MineSweeper struct {
 	Rows        int
 	Columns     int

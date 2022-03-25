@@ -27,8 +27,12 @@ const (
 )
 
 var (
-	nums      [9]int = [9]int{zero, one, two, three, four, five, six, seven, eight}
-	nextCheck []int
+	nums       [9]int = [9]int{zero, one, two, three, four, five, six, seven, eight}
+	nextCheck  []int
+	scrollX    float64
+	scrollY    float64
+	maxScrollX float64
+	maxScrollY float64
 )
 
 func (m *MineSweeper) GetId() string {
