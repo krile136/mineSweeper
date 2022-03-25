@@ -1,6 +1,9 @@
 package minesweeper
 
-import "math/rand"
+import (
+	"log"
+	"math/rand"
+)
 
 func (m *MineSweeper) placeBombs() error {
 	// フィールドを初期化
@@ -43,7 +46,7 @@ func (m *MineSweeper) searchAround(x, y int) {
 				if inArray(m.bombsPosition, position) {
 					bombs += 1
 				} else {
-					if m.field[y][x] == close {
+					if m.field[i][j] == close {
 						next = append(next, position)
 					}
 				}
@@ -53,10 +56,37 @@ func (m *MineSweeper) searchAround(x, y int) {
 	if bombs == 0 {
 		nextCheck = append(nextCheck, next...)
 	}
-	m.field[y][x] = nums[bombs]
+	// フラグがおいてあるマスはフィールド情報を更新しない
+	if m.field[y][x] != flag {
+		m.field[y][x] = nums[bombs]
+	}
 	if len(nextCheck) > 0 {
 		nextCheck = nextCheck[1:]
 	}
+}
+
+// 周りの爆弾の数が表示されているフィールドにて、周囲のフィールドを走査する
+func (m *MineSweeper) searchAroundOnNumberField(x, y int) {
+	var next []int
+	for i := y - 1; i <= y+1; i++ {
+		for j := x - 1; j <= x+1; j++ {
+			if inBetween(0, i, m.rows-1) && inBetween(0, j, m.colomns-1) {
+				position := i*m.rows + j
+				if inArray(m.bombsPosition, position) {
+					// 周りのマスを開いたときに爆弾があった場合
+					if m.field[i][j] != flag {
+						// フラグおいてないのでゲームーオーバー
+						log.Print("game over!")
+					}
+				} else {
+					if m.field[i][j] == close {
+						next = append(next, position)
+					}
+				}
+			}
+		}
+	}
+	nextCheck = append(nextCheck, next...)
 }
 
 // int型の配列の中に特定のint型の値が含まれるかチェックする

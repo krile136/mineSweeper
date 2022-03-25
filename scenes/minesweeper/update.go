@@ -35,24 +35,45 @@ func (m *MineSweeper) Update() error {
 	mouse_x, mouse_y := ebiten.CursorPosition()
 	y := mouse_y / blockWidth
 	x := mouse_x / blockWidth
+
+	// 左クリックしたときの処理
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-		position := y*m.rows + x
-		if inArray(m.bombsPosition, position) {
-			m.field[y][x] = bomb
-		} else {
-			m.searchAround(x, y)
+		// クリックしたマスがフラグが立っていれば何もしない
+		if m.field[y][x] != flag {
+			position := y*m.rows + x
+			if inArray(m.bombsPosition, position) {
+				m.field[y][x] = bomb
+			} else {
+				m.searchAround(x, y)
+				for len(nextCheck) > 0 {
+					log.Println(fmt.Sprintf("next position: %d", nextCheck[0]))
+					search_y := nextCheck[0] / m.rows
+					search_x := nextCheck[0] % m.rows
+
+					m.searchAround(search_x, search_y)
+				}
+			}
+		}
+	}
+
+	// 右クリックしたときの処理
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonRight) {
+		switch m.field[y][x] {
+		case close:
+			m.placeFlag(x, y)
+		case flag:
+			m.field[y][x] = close
+		case one, two, three, four, five, six, seven, eight:
+			m.searchAroundOnNumberField(x, y)
 			for len(nextCheck) > 0 {
-				log.Println(fmt.Sprintf("next position: %d", nextCheck[0]))
 				search_y := nextCheck[0] / m.rows
 				search_x := nextCheck[0] % m.rows
 
 				m.searchAround(search_x, search_y)
 			}
+		default:
+			// 何もしない
 		}
-	}
-
-	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonRight) {
-		m.placeFlag(x, y)
 	}
 	return nil
 }
