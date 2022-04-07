@@ -30,7 +30,8 @@ func NewGame() (*Game, error) {
 	}
 
 	// レイアウト設定
-	game.Layout(store.Data.Layout.OutsideWidth, store.Data.Layout.OutsideHeight)
+	// game.Layout(store.Data.Layout.OutsideWidth, store.Data.Layout.OutsideHeight)
+	game.Layout(320, 320)
 
 	// 画像リソース読み込み
 	go func() {
@@ -47,7 +48,7 @@ func NewGame() (*Game, error) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return outsideWidth, outsideHeight
+	return 320, 320
 }
 
 func (g *Game) Update() error {

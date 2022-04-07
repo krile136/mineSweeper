@@ -13,8 +13,8 @@ type Store struct {
 
 // シーン間共通変数の初期化
 func (s *Store) Init() error {
-	Data.Layout.OutsideWidth = 640
-	Data.Layout.OutsideHeight = 640
+	Data.Layout.OutsideWidth = 320
+	Data.Layout.OutsideHeight = 320
 
 	Data.MineSweeper.Rows = 20
 	Data.MineSweeper.Columns = 20

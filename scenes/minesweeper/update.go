@@ -28,8 +28,10 @@ func (m *MineSweeper) Update() error {
 		m.placeBombs()
 
 		// スクロール可能値を計算する
-		maxScrollX = math.Max(0, float64(store.Data.Layout.OutsideWidth-blockWidth*store.Data.MineSweeper.Columns))
-		maxScrollY = math.Max(0, float64(store.Data.Layout.OutsideHeight-blockWidth*store.Data.MineSweeper.Rows))
+		// ブロックの大きさは、setWIndowの幅 / Layoutの幅に拡大される
+		blockCoefficient := 640 / 320
+		maxScrollX = math.Max(0, float64(blockWidth*blockCoefficient*store.Data.MineSweeper.Columns-store.Data.Layout.OutsideWidth))
+		maxScrollY = math.Max(0, float64(blockWidth*blockCoefficient*store.Data.MineSweeper.Rows-store.Data.Layout.OutsideHeight))
 		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
 	} else {
@@ -40,8 +42,8 @@ func (m *MineSweeper) Update() error {
 
 	// スクロールしたときの処理
 	wheelX, wheelY := ebiten.Wheel()
-	scrollX = setBetween(0, scrollX+wheelX, maxScrollX)
-	scrollY = setBetween(0, scrollY+wheelY, maxScrollY)
+	scrollX = setBetween(-float64(store.Data.Layout.OutsideWidth), scrollX+wheelX, 0)
+	scrollY = setBetween(-float64(store.Data.Layout.OutsideHeight), scrollY+wheelY, 0)
 
 	// マウスの座標をスクロールの分だけ補正する
 	mouse_x, mouse_y := ebiten.CursorPosition()
