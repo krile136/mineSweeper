@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"math"
-	"os"
-	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -44,11 +42,7 @@ func (m *MineSweeper) Update() error {
 
 	// スクロールしたときの処理
 	wheelX, wheelY := ebiten.Wheel()
-	scrollCorrectionValue, err := strconv.Atoi(os.Getenv("SCROLL_CORRECTION_VALUE"))
-	if err != nil {
-		return err
-	}
-	log.Println(fmt.Sprintf("correcion value: %d", scrollCorrectionValue))
+	scrollCorrectionValue := store.Data.Env.ScrollCorrectionValue
 	scrollX = setBetween(-float64(store.Data.Layout.OutsideWidth), scrollX+wheelX*float64(scrollCorrectionValue), 0)
 	scrollY = setBetween(-float64(store.Data.Layout.OutsideHeight), scrollY+wheelY*float64(scrollCorrectionValue), 0)
 
