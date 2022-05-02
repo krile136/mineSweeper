@@ -15,13 +15,13 @@ func (m *MineSweeper) Update() error {
 	// シーン切替時にstoreから行と列のデータを持ってくる
 	if scene.Is_just_changed {
 		m.rows = store.Data.MineSweeper.Rows
-		m.colomns = store.Data.MineSweeper.Columns
+		m.columns = store.Data.MineSweeper.Columns
 		m.bombsNumber = store.Data.MineSweeper.BombsNumber
 
 		// rowsとcolumnsからフィールドを作成
 		m.field = make([][]int, m.rows)
-		for i := 0; i < m.colomns; i++ {
-			m.field[i] = make([]int, m.colomns)
+		for i := 0; i < m.columns; i++ {
+			m.field[i] = make([]int, m.columns)
 		}
 
 		// 爆弾を配置する

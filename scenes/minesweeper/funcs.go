@@ -9,7 +9,7 @@ import (
 func (m *MineSweeper) placeBombs() error {
 	// フィールドを初期化
 	for i := 0; i < m.rows; i++ {
-		for j := 0; j < m.colomns; j++ {
+		for j := 0; j < m.columns; j++ {
 			m.field[i][j] = close
 		}
 	}
@@ -19,7 +19,7 @@ func (m *MineSweeper) placeBombs() error {
 	m.bombsPosition = make([]int, m.bombsNumber)
 	count := 0
 	for count < m.bombsNumber {
-		position := rand.Intn(m.rows * m.colomns)
+		position := rand.Intn(m.rows * m.columns)
 		if !inArray(m.bombsPosition, position) {
 			m.bombsPosition[count] = position
 			count++
@@ -42,7 +42,7 @@ func (m *MineSweeper) searchAround(x, y int) {
 	var next []int
 	for i := y - 1; i <= y+1; i++ {
 		for j := x - 1; j <= x+1; j++ {
-			if inBetween(0, i, m.rows-1) && inBetween(0, j, m.colomns-1) {
+			if inBetween(0, i, m.rows-1) && inBetween(0, j, m.columns-1) {
 				position := i*m.rows + j
 				if inArray(m.bombsPosition, position) {
 					bombs += 1
@@ -71,7 +71,7 @@ func (m *MineSweeper) searchAroundOnNumberField(x, y int) {
 	var next []int
 	for i := y - 1; i <= y+1; i++ {
 		for j := x - 1; j <= x+1; j++ {
-			if inBetween(0, i, m.rows-1) && inBetween(0, j, m.colomns-1) {
+			if inBetween(0, i, m.rows-1) && inBetween(0, j, m.columns-1) {
 				position := i*m.rows + j
 				if inArray(m.bombsPosition, position) {
 					// 周りのマスを開いたときに爆弾があった場合
