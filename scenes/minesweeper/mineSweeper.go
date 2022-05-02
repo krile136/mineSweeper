@@ -4,7 +4,7 @@ const id string = "mineSweeper"
 
 type MineSweeper struct {
 	rows          int
-	colomns       int
+	columns       int
 	bombsNumber   int
 	bombsPosition []int
 	field         [][]int

@@ -9,7 +9,7 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	c := 1.0
 	p := 32
 	for i := 0; i < m.rows; i++ {
-		for j := 0; j < m.colomns; j++ {
+		for j := 0; j < m.columns; j++ {
 			x := (float64(j)+0.5)*float64(p)*c + scrollX
 			y := (float64(i)+0.5)*float64(p)*c + scrollY
 			switch m.field[i][j] {
