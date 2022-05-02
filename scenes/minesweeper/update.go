@@ -27,11 +27,12 @@ func (m *MineSweeper) Update() error {
 		// 爆弾を配置する
 		m.placeBombs()
 
+		isBarDisplay = false
+
 		// スクロール可能値を計算する
 		// ブロックの大きさは、setWIndowの幅 / Layoutの幅に拡大される
-		blockCoefficient := 640 / 320
-		maxScrollX = math.Max(0, float64(blockWidth*blockCoefficient*store.Data.MineSweeper.Columns-store.Data.Layout.OutsideWidth))
-		maxScrollY = math.Max(0, float64(blockWidth*blockCoefficient*store.Data.MineSweeper.Rows-store.Data.Layout.OutsideHeight))
+		maxScrollX = math.Max(0, (32*float64(store.Data.MineSweeper.Columns))-float64(store.Data.Layout.OutsideWidth))
+		maxScrollY = math.Max(0, (32*float64(store.Data.MineSweeper.Rows))-float64(store.Data.Layout.OutsideHeight))
 		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
 	} else {
@@ -43,8 +44,25 @@ func (m *MineSweeper) Update() error {
 	// スクロールしたときの処理
 	wheelX, wheelY := ebiten.Wheel()
 	scrollCorrectionValue := store.Data.Env.ScrollCorrectionValue
-	scrollX = setBetween(-float64(store.Data.Layout.OutsideWidth), scrollX+wheelX*float64(scrollCorrectionValue), 0)
-	scrollY = setBetween(-float64(store.Data.Layout.OutsideHeight), scrollY+wheelY*float64(scrollCorrectionValue), 0)
+	scrollX = setBetween(-float64(maxScrollX), scrollX+wheelX*float64(scrollCorrectionValue), 0)
+	scrollY = setBetween(-float64(maxScrollY), scrollY+wheelY*float64(scrollCorrectionValue), 0)
+
+	// スクロールされている間だけスクロールバーのサイズと位置を計算する
+	if wheelX != 0 || wheelY != 0 {
+		isBarDisplay = true
+		BarDisplayFrame = 30
+		barLengthY = math.Max(0.5, float64(store.Data.Layout.OutsideHeight)/(float64(store.Data.Layout.OutsideHeight)+maxScrollY)) * float64(store.Data.Layout.OutsideHeight)
+		barSlideY = ((float64(store.Data.Layout.OutsideHeight)-barLengthY)/maxScrollY)*math.Abs(scrollY) + barLengthY/2
+		barLengthX = math.Max(0.5, float64(store.Data.Layout.OutsideWidth)/(float64(store.Data.Layout.OutsideWidth)+maxScrollX)) * float64(store.Data.Layout.OutsideWidth)
+		barSlideX = ((float64(store.Data.Layout.OutsideWidth)-barLengthX)/maxScrollX)*math.Abs(scrollX) + barLengthX/2
+	} else {
+		if isBarDisplay {
+			BarDisplayFrame -= 1
+			if BarDisplayFrame <= 0 {
+				isBarDisplay = false
+			}
+		}
+	}
 
 	// マウスの座標をスクロールの分だけ補正する
 	mouse_x, mouse_y := ebiten.CursorPosition()

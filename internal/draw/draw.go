@@ -17,28 +17,28 @@ var (
 )
 
 // 画像を描画する (Rectによる切り抜きあり)
-func Draw(screen *ebiten.Image, key string, coefficient, x_coodinates, y_coodinates, angle float64, rect_base_x, rect_base_y, rect_area_x, rect_area_y int) {
+func Draw(screen *ebiten.Image, key string, x_coefficient, y_coefficient, x_coodinates, y_coodinates, angle float64, rect_base_x, rect_base_y, rect_area_x, rect_area_y int) {
 	var image *ebiten.Image = images[key].SubImage(image.Rect(rect_base_x, rect_base_y, rect_base_x+rect_area_x, rect_base_y+rect_area_y)).(*ebiten.Image)
-	calcAndDisplay(screen, image, coefficient, x_coodinates, y_coodinates, angle)
+	calcAndDisplay(screen, image, x_coefficient, y_coefficient, x_coodinates, y_coodinates, angle)
 }
 
 func DrawWithoutRect(screen *ebiten.Image, key string, coefficient, x_coodinates, y_coodinates, angle float64) {
 	var image *ebiten.Image = images[key]
-	calcAndDisplay(screen, image, coefficient, x_coodinates, y_coodinates, angle)
+	calcAndDisplay(screen, image, coefficient, coefficient, x_coodinates, y_coodinates, angle)
 }
 
-func calcAndDisplay(screen *ebiten.Image, image *ebiten.Image, coefficient, x_coodinates, y_coodinates, angle float64) {
+func calcAndDisplay(screen *ebiten.Image, image *ebiten.Image, x_coefficient, y_coefficient, x_coodinates, y_coodinates, angle float64) {
 	// 画像のサイズを取得
 	w, h := image.Size()
 
 	// 係数で画像を拡大/縮小したときの大きさを計算しておく
-	var sw, sh float64 = float64(w) * coefficient, float64(h) * coefficient
+	var sw, sh float64 = float64(w) * x_coefficient, float64(h) * y_coefficient
 
 	// オプションを宣言
 	op := &ebiten.DrawImageOptions{}
 
 	// 画像を拡大/縮小する
-	op.GeoM.Scale(coefficient, coefficient)
+	op.GeoM.Scale(x_coefficient, y_coefficient)
 
 	// 縮小したサイズに合わせて、画面の左上に縦横半分めり込む形にする
 	op.GeoM.Translate(-sw/2, -sh/2)
