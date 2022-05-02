@@ -3,6 +3,7 @@ package minesweeper
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/krile136/mineSweeper/internal/draw"
+	"github.com/krile136/mineSweeper/store"
 )
 
 func (m *MineSweeper) Draw(screen *ebiten.Image) {
@@ -43,4 +44,8 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	}
 
 	// スクロールバーを表示
+	if isBarDisplay {
+		draw.Draw(screen, "minesweeper", barLengthX/float64(p), 0.5, barSlideX, float64(store.Data.Layout.OutsideWidth), 0, p*5, 0, p, p)
+		draw.Draw(screen, "minesweeper", 0.5, barLengthY/float64(p), float64(store.Data.Layout.OutsideWidth), barSlideY, 0, p*5, 0, p, p)
+	}
 }
