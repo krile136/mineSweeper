@@ -21,6 +21,7 @@ type Store struct {
 func (s *Store) Init() error {
 	Data.Layout.OutsideWidth = 320
 	Data.Layout.OutsideHeight = 320
+	Data.Layout.BattleField = 75
 
 	tempScrollCorrectiveValue, err := strconv.Atoi(os.Getenv("SCROLL_CORRECTION_VALUE"))
 	if err != nil {
@@ -38,6 +39,7 @@ func (s *Store) Init() error {
 type Layout struct {
 	OutsideWidth  int
 	OutsideHeight int
+	BattleField   int
 }
 
 type Env struct {

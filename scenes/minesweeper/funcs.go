@@ -77,7 +77,8 @@ func (m *MineSweeper) searchAroundOnNumberField(x, y int) {
 					// 周りのマスを開いたときに爆弾があった場合
 					if m.field[i][j] != flag {
 						// フラグおいてないのでゲームーオーバー
-						log.Print("game over!")
+						m.field[i][j] = bomb
+						log.Print("game over! (right click)")
 					}
 				} else {
 					if m.field[i][j] == close {

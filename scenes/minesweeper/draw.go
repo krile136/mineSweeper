@@ -10,10 +10,11 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	// 各ブロックを表示
 	c := 1.0
 	p := 32
+	bf := store.Data.Layout.BattleField
 	for i := 0; i < m.rows; i++ {
 		for j := 0; j < m.columns; j++ {
 			x := (float64(j)+0.5)*float64(p)*c + scrollX
-			y := (float64(i)+0.5)*float64(p)*c + scrollY
+			y := (float64(i)+0.5)*float64(p)*c + scrollY + float64(bf)
 			switch m.field[i][j] {
 			case close:
 				draw.Draw(screen, "minesweeper", c, c, x, y, 0, 0, 0, p, p)
@@ -48,4 +49,11 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 		draw.Draw(screen, "minesweeper", barLengthX/float64(p), 0.5, barSlideX, float64(store.Data.Layout.OutsideWidth), 0, p*5, 0, p, p)
 		draw.Draw(screen, "minesweeper", 0.5, barLengthY/float64(p), float64(store.Data.Layout.OutsideWidth), barSlideY, 0, p*5, 0, p, p)
 	}
+
+	// BattleFiledを表示
+	bf_x := 640
+	sliceOffsetX := (bf_x - store.Data.Layout.OutsideWidth) / 2
+	sliceOffsetY := 50
+	draw.Draw(screen, "pipo-battlebg001", 1, 0.5, float64(store.Data.Layout.OutsideWidth)/2, float64(store.Data.Layout.BattleField)/2, 0, sliceOffsetX, sliceOffsetY, store.Data.Layout.OutsideWidth, store.Data.Layout.BattleField*2)
+
 }

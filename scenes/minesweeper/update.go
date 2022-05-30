@@ -32,7 +32,7 @@ func (m *MineSweeper) Update() error {
 		// スクロール可能値を計算する
 		// ブロックの大きさは、setWIndowの幅 / Layoutの幅に拡大される
 		maxScrollX = math.Max(0, (32*float64(store.Data.MineSweeper.Columns))-float64(store.Data.Layout.OutsideWidth))
-		maxScrollY = math.Max(0, (32*float64(store.Data.MineSweeper.Rows))-float64(store.Data.Layout.OutsideHeight))
+		maxScrollY = math.Max(0, (32*float64(store.Data.MineSweeper.Rows)+float64(store.Data.Layout.BattleField))-float64(store.Data.Layout.OutsideHeight))
 		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
 	} else {
@@ -51,8 +51,8 @@ func (m *MineSweeper) Update() error {
 	if wheelX != 0 || wheelY != 0 {
 		isBarDisplay = true
 		BarDisplayFrame = 30
-		barLengthY = math.Max(0.5, float64(store.Data.Layout.OutsideHeight)/(float64(store.Data.Layout.OutsideHeight)+maxScrollY)) * float64(store.Data.Layout.OutsideHeight)
-		barSlideY = ((float64(store.Data.Layout.OutsideHeight)-barLengthY)/maxScrollY)*math.Abs(scrollY) + barLengthY/2
+		barLengthY = math.Max(0.5, float64(store.Data.Layout.OutsideHeight-store.Data.Layout.BattleField)/(float64(store.Data.Layout.OutsideHeight-store.Data.Layout.BattleField)+maxScrollY)) * float64(store.Data.Layout.OutsideHeight-store.Data.Layout.BattleField)
+		barSlideY = float64(store.Data.Layout.BattleField) + ((float64(store.Data.Layout.OutsideHeight-store.Data.Layout.BattleField)-barLengthY)/maxScrollY)*math.Abs(scrollY) + barLengthY/2
 		barLengthX = math.Max(0.5, float64(store.Data.Layout.OutsideWidth)/(float64(store.Data.Layout.OutsideWidth)+maxScrollX)) * float64(store.Data.Layout.OutsideWidth)
 		barSlideX = ((float64(store.Data.Layout.OutsideWidth)-barLengthX)/maxScrollX)*math.Abs(scrollX) + barLengthX/2
 	} else {
@@ -64,47 +64,52 @@ func (m *MineSweeper) Update() error {
 		}
 	}
 
-	// マウスの座標をスクロールの分だけ補正する
+	// マウスの座標をスクロールとbattleFieldの分だけ補正する
 	mouse_x, mouse_y := ebiten.CursorPosition()
-	y := (mouse_y - int(scrollY)) / blockWidth
+	y := (mouse_y - int(scrollY) - store.Data.Layout.BattleField) / blockWidth
 	x := (mouse_x - int(scrollX)) / blockWidth
 
-	// 左クリックしたときの処理
-	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-		// クリックしたマスがフラグが立っていれば何もしない
-		if m.field[y][x] != flag {
-			position := y*m.rows + x
-			if inArray(m.bombsPosition, position) {
-				m.field[y][x] = bomb
-			} else {
-				m.searchAround(x, y)
+	// クリック処理の前提条件として、マウスY座標がbattleFieldより下であること
+	if mouse_y > store.Data.Layout.BattleField {
+		// 左クリックしたときの処理
+		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+			// クリックしたマスがフラグが立っていれば何もしない
+			if m.field[y][x] != flag {
+				position := y*m.rows + x
+				if inArray(m.bombsPosition, position) {
+					// 爆弾があるのでゲームオーバー
+					log.Print("game over! (left click)")
+					m.field[y][x] = bomb
+				} else {
+					m.searchAround(x, y)
+					for len(nextCheck) > 0 {
+						search_y := nextCheck[0] / m.rows
+						search_x := nextCheck[0] % m.rows
+
+						m.searchAround(search_x, search_y)
+					}
+				}
+			}
+		}
+
+		// 右クリックしたときの処理
+		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonRight) {
+			switch m.field[y][x] {
+			case close:
+				m.placeFlag(x, y)
+			case flag:
+				m.field[y][x] = close
+			case one, two, three, four, five, six, seven, eight:
+				m.searchAroundOnNumberField(x, y)
 				for len(nextCheck) > 0 {
 					search_y := nextCheck[0] / m.rows
 					search_x := nextCheck[0] % m.rows
 
 					m.searchAround(search_x, search_y)
 				}
+			default:
+				// 何もしない
 			}
-		}
-	}
-
-	// 右クリックしたときの処理
-	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonRight) {
-		switch m.field[y][x] {
-		case close:
-			m.placeFlag(x, y)
-		case flag:
-			m.field[y][x] = close
-		case one, two, three, four, five, six, seven, eight:
-			m.searchAroundOnNumberField(x, y)
-			for len(nextCheck) > 0 {
-				search_y := nextCheck[0] / m.rows
-				search_x := nextCheck[0] % m.rows
-
-				m.searchAround(search_x, search_y)
-			}
-		default:
-			// 何もしない
 		}
 	}
 	return nil
