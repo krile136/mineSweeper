@@ -1,8 +1,11 @@
 package minesweeper
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/krile136/mineSweeper/internal/draw"
+	"github.com/krile136/mineSweeper/internal/text"
 	"github.com/krile136/mineSweeper/store"
 )
 
@@ -56,4 +59,12 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	sliceOffsetY := 50
 	draw.Draw(screen, "pipo-battlebg001", 1, 0.5, float64(store.Data.Layout.OutsideWidth)/2, float64(store.Data.Layout.BattleField)/2, 0, sliceOffsetX, sliceOffsetY, store.Data.Layout.OutsideWidth, store.Data.Layout.BattleField*2)
 
+	orange := color.RGBA{
+		255,
+		102,
+		0,
+		255,
+	}
+
+	text.DrawText(screen, "test", 100, 100, orange)
 }
