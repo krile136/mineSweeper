@@ -35,6 +35,15 @@ func (m *MineSweeper) Update() error {
 		maxScrollY = math.Max(0, (32*float64(store.Data.MineSweeper.Rows)+float64(store.Data.Layout.BattleField))-float64(store.Data.Layout.OutsideHeight))
 		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
+		// ゲームに関するデータを初期化する
+		PlayerLv = 1
+		PlayerHp = 100
+		PlayerMaxHp = 100
+		PlayerExp = 0
+		EnemyLv = 0
+		EnemyHp = 100
+		EnemyMaxHp = 10000
+
 	} else {
 		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 			m.placeBombs()
@@ -85,7 +94,6 @@ func (m *MineSweeper) Update() error {
 					for len(nextCheck) > 0 {
 						search_y := nextCheck[0] / m.rows
 						search_x := nextCheck[0] % m.rows
-
 						m.searchAround(search_x, search_y)
 					}
 				}

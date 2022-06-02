@@ -39,6 +39,13 @@ var (
 	barSlideY       float64
 	isBarDisplay    bool
 	BarDisplayFrame int
+	PlayerLv        int
+	PlayerHp        int
+	PlayerMaxHp     int
+	PlayerExp       int
+	EnemyLv         int
+	EnemyHp         int
+	EnemyMaxHp      int
 )
 
 func (m *MineSweeper) GetId() string {

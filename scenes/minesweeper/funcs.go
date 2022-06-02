@@ -26,6 +26,8 @@ func (m *MineSweeper) placeBombs() error {
 		}
 	}
 
+	PlayerExp = 0
+
 	return nil
 }
 
@@ -58,8 +60,9 @@ func (m *MineSweeper) searchAround(x, y int) {
 		nextCheck = append(nextCheck, next...)
 	}
 	// フラグがおいてあるマスはフィールド情報を更新しない
-	if m.field[y][x] != flag {
+	if m.field[y][x] != flag && m.field[y][x] == close {
 		m.field[y][x] = nums[bombs]
+		PlayerExp += 1
 	}
 	if len(nextCheck) > 0 {
 		nextCheck = nextCheck[1:]
