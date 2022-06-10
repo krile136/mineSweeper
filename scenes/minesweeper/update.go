@@ -40,10 +40,25 @@ func (m *MineSweeper) Update() error {
 		PlayerHp = 100
 		PlayerMaxHp = 100
 		PlayerExp = 0
+		PlayerSpeed = 100
+		PlayerTick = 0
+		PlayerTurn = false
+		PlayerMove = 1
+		PlayerDiff = 0
+		PlayerAttack = 10
+		PlayerDefense = 5
+		PlayerActiveBar = 0
 		EnemyLv = 0
 		EnemyHp = 100
-		EnemyMaxHp = 10000
-
+		EnemyMaxHp = 100
+		EnemySpeed = 160
+		EnemyTick = 0
+		EnemyTurn = false
+		EnemyDiff = 0
+		EnemyMove = -1
+		EnemyAttack = 5
+		EnemyDefense = 1
+		EnemyActiveBar = 0
 	} else {
 		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 			m.placeBombs()
@@ -120,5 +135,59 @@ func (m *MineSweeper) Update() error {
 			}
 		}
 	}
+
+	// バトル周りの処理
+
+	// 攻撃タイミング処理
+	// プレイヤー側のタイマーを進めて、Speedと同じになった攻撃ターン
+	// どちらかの攻撃ターンになったときは、攻撃が完了するまで相手のタイマーは止まる
+	if !PlayerTurn && !EnemyTurn {
+		PlayerTick += 1
+		EnemyTick += 1
+	}
+
+	if EnemyTurn {
+		EnemyDiff += EnemyMove * 5
+		if math.Abs(float64(EnemyDiff)) >= 50 {
+			EnemyMove = EnemyMove * -1
+			damage := float64(EnemyAttack)*0.5 - float64(PlayerDefense)*0.25
+			PlayerHp -= damage
+		}
+		if EnemyDiff > 0 {
+			EnemyMove = EnemyMove * -1
+			EnemyDiff = 0
+			EnemyTick = 0
+			EnemyTurn = false
+		}
+	}
+
+	if PlayerTurn {
+		PlayerDiff += PlayerMove * 5
+		if math.Abs(float64(PlayerDiff)) > 50 {
+			PlayerMove = PlayerMove * -1
+			damage := float64(PlayerAttack)*0.5 - float64(EnemyDefense)*0.25
+			EnemyHp -= damage
+		}
+		if PlayerDiff <= 0 {
+			PlayerMove = PlayerMove * -1
+			PlayerDiff = 0
+			PlayerTick = 0
+			PlayerTurn = false
+		}
+	}
+
+	if PlayerTick >= PlayerSpeed {
+		PlayerTurn = true
+	}
+	if EnemyTick >= EnemySpeed && !PlayerTurn {
+		EnemyTurn = true
+	}
+
+	PlayerActiveBar = float64(PlayerTick) / float64(PlayerSpeed)
+	EnemyActiveBar = float64(EnemyTick) / float64(EnemySpeed)
+
+	log.Println(fmt.Sprintf("PlayerTick: %d,    EnemyTick: %d", PlayerTick, EnemyTick))
+	log.Println(fmt.Sprintf("PlayerActiveBar: %g", PlayerActiveBar))
+
 	return nil
 }

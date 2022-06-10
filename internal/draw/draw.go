@@ -2,6 +2,7 @@ package draw
 
 import (
 	"image"
+	"image/color"
 	_ "image/png"
 	"math"
 	"path"
@@ -10,6 +11,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/krile136/mineSweeper/internal/assets"
+	"github.com/krile136/mineSweeper/store"
 )
 
 var (
@@ -26,6 +28,7 @@ func Draw(screen *ebiten.Image, key string, x_coefficient, y_coefficient, x_coor
 func DrawWithoutRect(screen *ebiten.Image, key string, coefficient, x_coordinates, y_coordinates, angle float64) {
 	var image *ebiten.Image = images[key]
 	op := calcOption(image, coefficient, coefficient, x_coordinates, y_coordinates, angle)
+	op = applyColor(op, store.Data.Color.Red)
 	screen.DrawImage(image, op)
 
 }
@@ -51,6 +54,12 @@ func calcOption(image *ebiten.Image, x_coefficient, y_coefficient, x_coordinates
 
 	// 好きな位置へ移動させる
 	op.GeoM.Translate(x_coordinates, y_coordinates)
+
+	return op
+}
+
+func applyColor(op *ebiten.DrawImageOptions, clr color.Color) *ebiten.DrawImageOptions {
+	op.ColorM.Apply(clr)
 
 	return op
 }

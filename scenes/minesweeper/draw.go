@@ -60,18 +60,24 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	draw.Draw(screen, "pipo-battlebg001", 1, 0.5, float64(store.Data.Layout.OutsideWidth)/2, float64(store.Data.Layout.BattleField)/2, 0, sliceOffsetX, sliceOffsetY, store.Data.Layout.OutsideWidth, store.Data.Layout.BattleField*2)
 
 	// キャラクターを描画
-	draw.DrawWithoutRect(screen, "character", 1, 110, 45, 0)
-	draw.DrawWithoutRect(screen, "slime", 1, 195, 45, 0)
+	draw.DrawWithoutRect(screen, "character", 1, 110+float64(PlayerDiff), 40, 0)
+	draw.DrawWithoutRect(screen, "slime", 1, 195+float64(EnemyDiff), 40, 0)
+
+	// アクティブバーを描画
+	draw.Draw(screen, "minesweeper", 1.2, 0.2, 110, 70, 0, p*5, 0, p, p)
+	draw.Draw(screen, "minesweeper", 1.2*PlayerActiveBar, 0.2, 110-(1-PlayerActiveBar)*float64(p)*0.6, 70, 0, p*7, 0, p, p)
+	draw.Draw(screen, "minesweeper", 1.2, 0.2, 195, 70, 0, p*5, 0, p, p)
+	draw.Draw(screen, "minesweeper", 1.2*EnemyActiveBar, 0.2, 195-(1-EnemyActiveBar)*float64(p)*0.6, 70, 0, p*7, 0, p, p)
 
 	// 文字を描画
-	text.DrawText(screen, fmt.Sprintf("Lv %d", PlayerLv), 100, 15, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf("Lv %d", PlayerLv), 100, 10, "S", store.Data.Color.Black)
 	text.DrawText(screen, "HP", 5, 20, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d/%d", PlayerHp, PlayerMaxHp), 5, 35, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d/%d", int(PlayerHp), int(PlayerMaxHp)), 5, 35, "M", store.Data.Color.Black)
 	text.DrawText(screen, "EXP", 5, 55, "M", store.Data.Color.Black)
 	text.DrawText(screen, fmt.Sprintf(" %d", PlayerExp), 5, 70, "M", store.Data.Color.Black)
 
-	HpStringLength := text.Length(fmt.Sprintf(" %d/%d", EnemyHp, EnemyMaxHp), "M")
-	text.DrawText(screen, fmt.Sprintf("Lv %d", EnemyLv), 180, 15, "M", store.Data.Color.Black)
+	HpStringLength := text.Length(fmt.Sprintf(" %d/%d", int(EnemyHp), int(EnemyMaxHp)), "M")
+	text.DrawText(screen, fmt.Sprintf("Lv %d", EnemyLv), 180, 10, "S", store.Data.Color.Black)
 	text.DrawText(screen, "HP", 300, 20, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d/%d", EnemyHp, EnemyMaxHp), 310-HpStringLength, 35, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d/%d", int(EnemyHp), int(EnemyMaxHp)), 310-HpStringLength, 35, "M", store.Data.Color.Black)
 }

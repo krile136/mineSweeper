@@ -40,12 +40,28 @@ var (
 	isBarDisplay    bool
 	BarDisplayFrame int
 	PlayerLv        int
-	PlayerHp        int
-	PlayerMaxHp     int
+	PlayerHp        float64
+	PlayerMaxHp     float64
 	PlayerExp       int
+	PlayerSpeed     int
+	PlayerTick      int
+	PlayerTurn      bool
+	PlayerMove      int
+	PlayerDiff      int
+	PlayerAttack    int
+	PlayerDefense   int
+	PlayerActiveBar float64
 	EnemyLv         int
-	EnemyHp         int
-	EnemyMaxHp      int
+	EnemyHp         float64
+	EnemyMaxHp      float64
+	EnemySpeed      int
+	EnemyTick       int
+	EnemyTurn       bool
+	EnemyMove       int
+	EnemyDiff       int
+	EnemyAttack     int
+	EnemyDefense    int
+	EnemyActiveBar  float64
 )
 
 func (m *MineSweeper) GetId() string {
