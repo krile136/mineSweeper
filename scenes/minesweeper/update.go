@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -36,6 +37,7 @@ func (m *MineSweeper) Update() error {
 		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
 		// ゲームに関するデータを初期化する
+		messages = []message{}
 		PlayerLv = 1
 		PlayerHp = 100
 		PlayerMaxHp = 100
@@ -139,7 +141,7 @@ func (m *MineSweeper) Update() error {
 	// バトル周りの処理
 
 	// 攻撃タイミング処理
-	// プレイヤー側のタイマーを進めて、Speedと同じになった攻撃ターン
+	// タイマーを進めて、Speedと同じになった攻撃ターン
 	// どちらかの攻撃ターンになったときは、攻撃が完了するまで相手のタイマーは止まる
 	if !PlayerTurn && !EnemyTurn {
 		PlayerTick += 1
@@ -150,7 +152,16 @@ func (m *MineSweeper) Update() error {
 		EnemyDiff += EnemyMove * 5
 		if math.Abs(float64(EnemyDiff)) >= 50 {
 			EnemyMove = EnemyMove * -1
-			damage := float64(EnemyAttack)*0.5 - float64(PlayerDefense)*0.25
+			damage := math.Max(1, math.Floor(float64(EnemyAttack)*0.5-float64(PlayerDefense)*0.25))
+			defaultPositionX, defaultPositionY := PlayerDamage.getDefaultPosition()
+			newMessage := message{
+				value:      strconv.FormatFloat(damage, 'f', 0, 64),
+				messageDiv: PlayerDamage,
+				x:          defaultPositionX,
+				y:          defaultPositionY,
+				tick:       0,
+			}
+			messages = append(messages, newMessage)
 			PlayerHp -= damage
 		}
 		if EnemyDiff > 0 {
@@ -165,7 +176,16 @@ func (m *MineSweeper) Update() error {
 		PlayerDiff += PlayerMove * 5
 		if math.Abs(float64(PlayerDiff)) > 50 {
 			PlayerMove = PlayerMove * -1
-			damage := float64(PlayerAttack)*0.5 - float64(EnemyDefense)*0.25
+			damage := math.Max(1, math.Floor(float64(PlayerAttack)*0.5-float64(EnemyDefense)*0.25))
+			defaultPositionX, defaultPositionY := EnemyDamage.getDefaultPosition()
+			newMessage := message{
+				value:      strconv.FormatFloat(damage, 'f', 0, 64),
+				messageDiv: EnemyDamage,
+				x:          defaultPositionX,
+				y:          defaultPositionY,
+				tick:       0,
+			}
+			messages = append(messages, newMessage)
 			EnemyHp -= damage
 		}
 		if PlayerDiff <= 0 {
@@ -186,8 +206,20 @@ func (m *MineSweeper) Update() error {
 	PlayerActiveBar = float64(PlayerTick) / float64(PlayerSpeed)
 	EnemyActiveBar = float64(EnemyTick) / float64(EnemySpeed)
 
-	log.Println(fmt.Sprintf("PlayerTick: %d,    EnemyTick: %d", PlayerTick, EnemyTick))
-	log.Println(fmt.Sprintf("PlayerActiveBar: %g", PlayerActiveBar))
+	// log.Println(fmt.Sprintf("PlayerTick: %d,    EnemyTick: %d", PlayerTick, EnemyTick))
+	// log.Println(fmt.Sprintf("PlayerActiveBar: %g", PlayerActiveBar))
+
+	// メッセージの更新処理
+	tempMessages := []message{}
+	for _, message := range messages {
+		message.update()
+		if message.isExist() {
+			tempMessages = append(tempMessages, message)
+		}
+		fmt.Printf("messageDiv: %s, value: %s,  exist: %d \n", message.messageDiv.String(), message.value, message.messageDiv.getExistTick()-message.tick)
+		fmt.Printf("mx: %d,  my; %d \n", int(message.x), int(message.y))
+	}
+	messages = tempMessages
 
 	return nil
 }
