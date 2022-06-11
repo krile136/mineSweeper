@@ -73,8 +73,8 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	text.DrawText(screen, fmt.Sprintf("Lv %d", PlayerLv), 100, 10, "S", store.Data.Color.Black)
 	text.DrawText(screen, "HP", 5, 20, "M", store.Data.Color.Black)
 	text.DrawText(screen, fmt.Sprintf(" %d/%d", int(PlayerHp), int(PlayerMaxHp)), 5, 35, "M", store.Data.Color.Black)
-	text.DrawText(screen, "EXP", 5, 55, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d", PlayerExp), 5, 70, "M", store.Data.Color.Black)
+	text.DrawText(screen, "NEXT", 5, 55, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d", PlayerNextExp), 5, 70, "M", store.Data.Color.Black)
 
 	HpStringLength := text.Length(fmt.Sprintf(" %d/%d", int(EnemyHp), int(EnemyMaxHp)), "M")
 	text.DrawText(screen, fmt.Sprintf("Lv %d", EnemyLv), 180, 10, "S", store.Data.Color.Black)

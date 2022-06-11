@@ -23,6 +23,7 @@ func (m message) isExist() bool {
 	return m.tick < m.messageDiv.getExistTick()
 }
 
+// メッセージ区分
 type MessageDiv int
 
 const (

@@ -41,7 +41,7 @@ func (m *MineSweeper) Update() error {
 		PlayerLv = 1
 		PlayerHp = 100
 		PlayerMaxHp = 100
-		PlayerExp = 0
+		PlayerNextExp = calcNextLevelUpExp()
 		PlayerSpeed = 100
 		PlayerTick = 0
 		PlayerTurn = false
@@ -50,7 +50,7 @@ func (m *MineSweeper) Update() error {
 		PlayerAttack = 10
 		PlayerDefense = 5
 		PlayerActiveBar = 0
-		EnemyLv = 0
+		EnemyLv = 1
 		EnemyHp = 100
 		EnemyMaxHp = 100
 		EnemySpeed = 160
@@ -107,12 +107,14 @@ func (m *MineSweeper) Update() error {
 					log.Print("game over! (left click)")
 					m.field[y][x] = bomb
 				} else {
+					GetExp = 0
 					m.searchAround(x, y)
 					for len(nextCheck) > 0 {
 						search_y := nextCheck[0] / m.rows
 						search_x := nextCheck[0] % m.rows
 						m.searchAround(search_x, search_y)
 					}
+					levelUp(GetExp)
 				}
 			}
 		}
@@ -125,6 +127,7 @@ func (m *MineSweeper) Update() error {
 			case flag:
 				m.field[y][x] = close
 			case one, two, three, four, five, six, seven, eight:
+				GetExp = 0
 				m.searchAroundOnNumberField(x, y)
 				for len(nextCheck) > 0 {
 					search_y := nextCheck[0] / m.rows
@@ -132,6 +135,7 @@ func (m *MineSweeper) Update() error {
 
 					m.searchAround(search_x, search_y)
 				}
+				levelUp(GetExp)
 			default:
 				// 何もしない
 			}
@@ -216,8 +220,8 @@ func (m *MineSweeper) Update() error {
 		if message.isExist() {
 			tempMessages = append(tempMessages, message)
 		}
-		fmt.Printf("messageDiv: %s, value: %s,  exist: %d \n", message.messageDiv.String(), message.value, message.messageDiv.getExistTick()-message.tick)
-		fmt.Printf("mx: %d,  my; %d \n", int(message.x), int(message.y))
+		// fmt.Printf("messageDiv: %s, value: %s,  exist: %d \n", message.messageDiv.String(), message.value, message.messageDiv.getExistTick()-message.tick)
+		// fmt.Printf("mx: %d,  my; %d \n", int(message.x), int(message.y))
 	}
 	messages = tempMessages
 

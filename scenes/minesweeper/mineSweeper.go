@@ -42,10 +42,11 @@ var (
 
 	messages []message
 
+	GetExp          int
 	PlayerLv        int
 	PlayerHp        float64
 	PlayerMaxHp     float64
-	PlayerExp       int
+	PlayerNextExp   int
 	PlayerSpeed     int
 	PlayerTick      int
 	PlayerTurn      bool
