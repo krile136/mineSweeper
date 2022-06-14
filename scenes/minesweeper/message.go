@@ -11,8 +11,8 @@ type message struct {
 
 // メッセージの時間を進める
 func (m *message) update() error {
-	m.tick += 1
 	mx, my := m.messageDiv.getMoveValue(m.tick)
+	m.tick += 1
 	m.x += mx
 	m.y += my
 	return nil
@@ -20,7 +20,7 @@ func (m *message) update() error {
 
 // メッセージの時間が存在可能時間内かチェックする
 func (m message) isExist() bool {
-	return m.tick < m.messageDiv.getExistTick()
+	return m.tick <= (m.messageDiv.getExistTick())
 }
 
 // メッセージ区分
@@ -52,7 +52,7 @@ func (m MessageDiv) getExistTick() int {
 	case EnemyDamage:
 		return 40
 	case LevelUp:
-		return 40
+		return 70
 	default:
 		return 0
 	}
@@ -61,17 +61,20 @@ func (m MessageDiv) getExistTick() int {
 func (m MessageDiv) getMoveValue(tick int) (x, y float64) {
 	switch m {
 	case PlayerDamage:
-		g := float64(0.01)
-		v := (g * -0.25) * float64(m.getExistTick())
-		diffY := v*float64(tick) + g*0.5*float64(tick*tick)
+		g := float64(0.1)
+		v := g * float64(m.getExistTick()) * -0.5
+		diffY := v + g*float64(tick)
 		return -1, diffY
 	case EnemyDamage:
-		g := float64(0.01)
-		v := (g * -0.25) * float64(m.getExistTick())
-		diffY := v*float64(tick) + g*0.5*float64(tick*tick)
+		g := float64(0.1)
+		v := g * float64(m.getExistTick()) * -0.5
+		diffY := v + g*float64(tick)
 		return 1, diffY
 	case LevelUp:
-		return 0, 2
+		g := float64(-0.1)
+		v := g * float64(m.getExistTick()) * -0.5
+		diffY := v + g*float64(tick)
+		return 0, diffY
 	default:
 		return 0, 0
 	}
@@ -80,11 +83,11 @@ func (m MessageDiv) getMoveValue(tick int) (x, y float64) {
 func (m MessageDiv) getDefaultPosition() (x, y float64) {
 	switch m {
 	case PlayerDamage:
-		return 100, 45
+		return 100, 55
 	case EnemyDamage:
-		return 210, 45
+		return 210, 55
 	case LevelUp:
-		return 0, 2
+		return 100, 0
 	default:
 		return 0, 0
 	}

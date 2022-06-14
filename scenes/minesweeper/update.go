@@ -114,7 +114,18 @@ func (m *MineSweeper) Update() error {
 						search_x := nextCheck[0] % m.rows
 						m.searchAround(search_x, search_y)
 					}
-					levelUp(GetExp)
+					isLevelUp, _, _ := levelUp(GetExp)
+					if isLevelUp {
+						levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
+						newMessage := message{
+							value:      "Level UP !!",
+							messageDiv: LevelUp,
+							x:          levelUpDefaultX,
+							y:          levelUpDefaultY,
+							tick:       0,
+						}
+						messages = append(messages, newMessage)
+					}
 				}
 			}
 		}
@@ -135,7 +146,19 @@ func (m *MineSweeper) Update() error {
 
 					m.searchAround(search_x, search_y)
 				}
-				levelUp(GetExp)
+				isLevelUp, _, _ := levelUp(GetExp)
+				if isLevelUp {
+					levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
+					newMessage := message{
+						value:      "Level UP !!",
+						messageDiv: LevelUp,
+						x:          levelUpDefaultX,
+						y:          levelUpDefaultY,
+						tick:       0,
+					}
+					messages = append(messages, newMessage)
+				}
+
 			default:
 				// 何もしない
 			}

@@ -130,13 +130,19 @@ func calcNextLevelUpExp() int {
 }
 
 // レベルアップを管理する
-func levelUp(exp int) {
+func levelUp(exp int) (bool, int, int) {
+	isLevelUp := false
+	from := PlayerLv
+	to := PlayerLv
+
 	fmt.Printf("Get EXP: %d\n", exp)
 	for exp > 0 {
 		currentNextExp := PlayerNextExp
 		exp -= currentNextExp
 		if exp >= 0 {
 			PlayerLv += 1
+			to = PlayerLv
+			isLevelUp = true
 			PlayerNextExp = calcNextLevelUpExp()
 			fmt.Printf("Level up: %d, PlayerNextExp: %d\n", PlayerLv, PlayerNextExp)
 		} else {
@@ -144,4 +150,5 @@ func levelUp(exp int) {
 			fmt.Printf("not Level up    next: %d\n", PlayerNextExp)
 		}
 	}
+	return isLevelUp, from, to
 }
