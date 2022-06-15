@@ -1,7 +1,6 @@
 package minesweeper
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -115,40 +114,4 @@ func inBetween(min, val, max int) bool {
 // float64型の値が最大値と最小値の間に収まるようにする
 func setBetween(min, val, max float64) float64 {
 	return math.Min(max, math.Max(min, val))
-}
-
-func getBaseLevelUpExp() int {
-	return 50
-}
-
-func calcNextLevelUpExp() int {
-	// 次の経験値の指数関数部分 base * (1.1 ^ (lv -1))
-	NextExpExponential := int(math.Floor(float64(getBaseLevelUpExp()) * math.Pow(1.1, float64(PlayerLv-1))))
-	// 次の経験値の比例関数部分 lv * 15
-	NextExpProportional := PlayerLv * 15
-	return (NextExpExponential + NextExpProportional) / 2
-}
-
-// レベルアップを管理する
-func levelUp(exp int) (bool, int, int) {
-	isLevelUp := false
-	from := PlayerLv
-	to := PlayerLv
-
-	fmt.Printf("Get EXP: %d\n", exp)
-	for exp > 0 {
-		currentNextExp := PlayerNextExp
-		exp -= currentNextExp
-		if exp >= 0 {
-			PlayerLv += 1
-			to = PlayerLv
-			isLevelUp = true
-			PlayerNextExp = calcNextLevelUpExp()
-			fmt.Printf("Level up: %d, PlayerNextExp: %d\n", PlayerLv, PlayerNextExp)
-		} else {
-			PlayerNextExp = exp * -1
-			fmt.Printf("not Level up    next: %d\n", PlayerNextExp)
-		}
-	}
-	return isLevelUp, from, to
 }

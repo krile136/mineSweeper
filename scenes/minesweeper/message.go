@@ -1,5 +1,7 @@
 package minesweeper
 
+import "image/color"
+
 // メッセージ構造体
 type message struct {
 	value      string
@@ -7,6 +9,7 @@ type message struct {
 	x          float64
 	y          float64
 	tick       int
+	crl        color.Color
 }
 
 // メッセージの時間を進める

@@ -42,31 +42,10 @@ var (
 
 	messages []message
 
-	GetExp          int
-	PlayerLv        int
-	PlayerHp        float64
-	PlayerMaxHp     float64
-	PlayerNextExp   int
-	PlayerSpeed     int
-	PlayerTick      int
-	PlayerTurn      bool
-	PlayerMove      int
-	PlayerDiff      int
-	PlayerAttack    int
-	PlayerDefense   int
-	PlayerActiveBar float64
+	player status
+	enemy  status
 
-	EnemyLv        int
-	EnemyHp        float64
-	EnemyMaxHp     float64
-	EnemySpeed     int
-	EnemyTick      int
-	EnemyTurn      bool
-	EnemyMove      int
-	EnemyDiff      int
-	EnemyAttack    int
-	EnemyDefense   int
-	EnemyActiveBar float64
+	GetExp int
 )
 
 func (m *MineSweeper) GetId() string {

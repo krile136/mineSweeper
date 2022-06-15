@@ -38,29 +38,9 @@ func (m *MineSweeper) Update() error {
 
 		// ゲームに関するデータを初期化する
 		messages = []message{}
-		PlayerLv = 1
-		PlayerHp = 100
-		PlayerMaxHp = 100
-		PlayerNextExp = calcNextLevelUpExp()
-		PlayerSpeed = 100
-		PlayerTick = 0
-		PlayerTurn = false
-		PlayerMove = 1
-		PlayerDiff = 0
-		PlayerAttack = 10
-		PlayerDefense = 5
-		PlayerActiveBar = 0
-		EnemyLv = 1
-		EnemyHp = 100
-		EnemyMaxHp = 100
-		EnemySpeed = 160
-		EnemyTick = 0
-		EnemyTurn = false
-		EnemyDiff = 0
-		EnemyMove = -1
-		EnemyAttack = 5
-		EnemyDefense = 1
-		EnemyActiveBar = 0
+		player = Player.getInitialPlayerStatus()
+		enemy = Slime.enemyFactory(1)
+
 	} else {
 		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 			m.placeBombs()
@@ -123,6 +103,7 @@ func (m *MineSweeper) Update() error {
 							x:          levelUpDefaultX,
 							y:          levelUpDefaultY,
 							tick:       0,
+							crl:        store.Data.Color.Orange,
 						}
 						messages = append(messages, newMessage)
 					}
@@ -155,6 +136,7 @@ func (m *MineSweeper) Update() error {
 						x:          levelUpDefaultX,
 						y:          levelUpDefaultY,
 						tick:       0,
+						crl:        store.Data.Color.Orange,
 					}
 					messages = append(messages, newMessage)
 				}
@@ -170,16 +152,17 @@ func (m *MineSweeper) Update() error {
 	// 攻撃タイミング処理
 	// タイマーを進めて、Speedと同じになった攻撃ターン
 	// どちらかの攻撃ターンになったときは、攻撃が完了するまで相手のタイマーは止まる
-	if !PlayerTurn && !EnemyTurn {
-		PlayerTick += 1
-		EnemyTick += 1
+	if !player.turn && !enemy.turn {
+		player.tick += 1
+		enemy.tick += 1
 	}
 
-	if EnemyTurn {
-		EnemyDiff += EnemyMove * 5
-		if math.Abs(float64(EnemyDiff)) >= 50 {
-			EnemyMove = EnemyMove * -1
-			damage := math.Max(1, math.Floor(float64(EnemyAttack)*0.5-float64(PlayerDefense)*0.25))
+	if enemy.turn {
+		log.Printf("enemy turn")
+		enemy.diff += enemy.move * 5
+		if math.Abs(float64(enemy.diff)) >= 50 {
+			enemy.move = enemy.move * -1
+			damage := math.Max(1, math.Floor(float64(enemy.attack)*0.5-float64(player.defense)*0.25))
 			defaultPositionX, defaultPositionY := PlayerDamage.getDefaultPosition()
 			newMessage := message{
 				value:      strconv.FormatFloat(damage, 'f', 0, 64),
@@ -187,23 +170,24 @@ func (m *MineSweeper) Update() error {
 				x:          defaultPositionX,
 				y:          defaultPositionY,
 				tick:       0,
+				crl:        store.Data.Color.Red,
 			}
 			messages = append(messages, newMessage)
-			PlayerHp -= damage
+			player.hp -= damage
 		}
-		if EnemyDiff > 0 {
-			EnemyMove = EnemyMove * -1
-			EnemyDiff = 0
-			EnemyTick = 0
-			EnemyTurn = false
+		if enemy.diff > 0 {
+			enemy.move = enemy.move * -1
+			enemy.diff = 0
+			enemy.tick = 0
+			enemy.turn = false
 		}
 	}
 
-	if PlayerTurn {
-		PlayerDiff += PlayerMove * 5
-		if math.Abs(float64(PlayerDiff)) > 50 {
-			PlayerMove = PlayerMove * -1
-			damage := math.Max(1, math.Floor(float64(PlayerAttack)*0.5-float64(EnemyDefense)*0.25))
+	if player.turn {
+		player.diff += player.move * 5
+		if math.Abs(float64(player.diff)) > 50 {
+			player.move = player.move * -1
+			damage := math.Max(1, math.Floor(float64(player.attack)*0.5-float64(enemy.defense)*0.25))
 			defaultPositionX, defaultPositionY := EnemyDamage.getDefaultPosition()
 			newMessage := message{
 				value:      strconv.FormatFloat(damage, 'f', 0, 64),
@@ -211,27 +195,28 @@ func (m *MineSweeper) Update() error {
 				x:          defaultPositionX,
 				y:          defaultPositionY,
 				tick:       0,
+				crl:        store.Data.Color.Red,
 			}
 			messages = append(messages, newMessage)
-			EnemyHp -= damage
+			enemy.hp -= damage
 		}
-		if PlayerDiff <= 0 {
-			PlayerMove = PlayerMove * -1
-			PlayerDiff = 0
-			PlayerTick = 0
-			PlayerTurn = false
+		if player.diff <= 0 {
+			player.move = player.move * -1
+			player.diff = 0
+			player.tick = 0
+			player.turn = false
 		}
 	}
 
-	if PlayerTick >= PlayerSpeed {
-		PlayerTurn = true
+	if player.tick >= player.speed {
+		player.turn = true
 	}
-	if EnemyTick >= EnemySpeed && !PlayerTurn {
-		EnemyTurn = true
+	if enemy.tick >= enemy.speed && !player.turn {
+		enemy.turn = true
 	}
 
-	PlayerActiveBar = float64(PlayerTick) / float64(PlayerSpeed)
-	EnemyActiveBar = float64(EnemyTick) / float64(EnemySpeed)
+	player.activeBar = float64(player.tick) / float64(player.speed)
+	enemy.activeBar = float64(enemy.tick) / float64(enemy.speed)
 
 	// log.Println(fmt.Sprintf("PlayerTick: %d,    EnemyTick: %d", PlayerTick, EnemyTick))
 	// log.Println(fmt.Sprintf("PlayerActiveBar: %g", PlayerActiveBar))
