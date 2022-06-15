@@ -60,8 +60,14 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	draw.Draw(screen, "pipo-battlebg001", 1, 0.5, float64(store.Data.Layout.OutsideWidth)/2, float64(store.Data.Layout.BattleField)/2, 0, sliceOffsetX, sliceOffsetY, store.Data.Layout.OutsideWidth, store.Data.Layout.BattleField*2)
 
 	// キャラクターを描画
-	draw.DrawWithoutRect(screen, "character", 1, 110+float64(player.diff), 40, 0)
-	draw.DrawWithoutRect(screen, "slime", 1, 195+float64(enemy.diff), 40, 0)
+	draw.DrawWithoutRect(screen, player.name, 1, 110+float64(player.diff), 40, 0)
+	if enemy.destroyed {
+		if isShowBlinking() {
+			draw.DrawWithoutRect(screen, enemy.name, 1, EnemyBattlePositionX+float64(enemy.diff), 40, 0)
+		}
+	} else {
+		draw.DrawWithoutRect(screen, enemy.name, 1, EnemyBattlePositionX+float64(enemy.diff), 40, 0)
+	}
 
 	// アクティブバーを描画
 	draw.Draw(screen, "minesweeper", 1.2, 0.2, 110, 70, 0, p*5, 0, p, p)

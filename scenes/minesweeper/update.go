@@ -158,7 +158,6 @@ func (m *MineSweeper) Update() error {
 	}
 
 	if enemy.turn {
-		log.Printf("enemy turn")
 		enemy.diff += enemy.move * 5
 		if math.Abs(float64(enemy.diff)) >= 50 {
 			enemy.move = enemy.move * -1
@@ -184,7 +183,16 @@ func (m *MineSweeper) Update() error {
 	}
 
 	if player.turn {
-		player.diff += player.move * 5
+		if !enemy.destroyed && !enemy.isAppearing {
+			player.diff += player.move * 5
+		} else {
+			if player.move < 0 {
+				player.diff += player.move * 5
+			} else {
+				player.diff = 0
+				player.tick = 0
+			}
+		}
 		if math.Abs(float64(player.diff)) > 50 {
 			player.move = player.move * -1
 			damage := math.Max(1, math.Floor(float64(player.attack)*0.5-float64(enemy.defense)*0.25))
@@ -198,13 +206,36 @@ func (m *MineSweeper) Update() error {
 				crl:        store.Data.Color.Red,
 			}
 			messages = append(messages, newMessage)
-			enemy.hp -= damage
+			enemy.hp = math.Max(0, enemy.hp-damage)
+			if enemy.hp <= 0 {
+				enemy.destroyed = true
+			}
 		}
 		if player.diff <= 0 {
 			player.move = player.move * -1
 			player.diff = 0
 			player.tick = 0
-			player.turn = false
+			if !enemy.destroyed && !enemy.isAppearing {
+				player.turn = false
+			}
+		}
+		if enemy.destroyed {
+			enemy.blinkingTick += 1
+			if enemy.blinkingTick >= DestroyBlinkingMaxTick {
+				lv := enemy.lv
+				enemy = Slime.enemyFactory(float64(lv + 1))
+				enemy.diff = 150
+				enemy.move = -1
+				enemy.isAppearing = true
+			}
+		}
+		if enemy.isAppearing {
+			enemy.diff += enemy.move * 5
+			if enemy.diff < 0 {
+				enemy.diff = 0
+				enemy.isAppearing = false
+				player.turn = false
+			}
 		}
 	}
 
