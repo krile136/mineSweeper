@@ -94,7 +94,7 @@ func (m *MineSweeper) Update() error {
 						search_x := nextCheck[0] % m.rows
 						m.searchAround(search_x, search_y)
 					}
-					isLevelUp, _, _ := levelUp(GetExp)
+					isLevelUp, _, _ := player.levelUp(GetExp)
 					if isLevelUp {
 						levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
 						newMessage := message{
@@ -127,7 +127,7 @@ func (m *MineSweeper) Update() error {
 
 					m.searchAround(search_x, search_y)
 				}
-				isLevelUp, _, _ := levelUp(GetExp)
+				isLevelUp, _, _ := player.levelUp(GetExp)
 				if isLevelUp {
 					levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
 					newMessage := message{
@@ -158,10 +158,10 @@ func (m *MineSweeper) Update() error {
 	}
 
 	if enemy.turn {
-		enemy.diff += enemy.move * 5
+		enemy.executeMoving()
 		if math.Abs(float64(enemy.diff)) >= 50 {
-			enemy.move = enemy.move * -1
-			damage := math.Max(1, math.Floor(float64(enemy.attack)*0.5-float64(player.defense)*0.25))
+			enemy.invertMove()
+			damage := enemy.attackTo(&player)
 			defaultPositionX, defaultPositionY := PlayerDamage.getDefaultPosition()
 			newMessage := message{
 				value:      strconv.FormatFloat(damage, 'f', 0, 64),
@@ -172,30 +172,27 @@ func (m *MineSweeper) Update() error {
 				crl:        store.Data.Color.Red,
 			}
 			messages = append(messages, newMessage)
-			player.hp -= damage
 		}
 		if enemy.diff > 0 {
-			enemy.move = enemy.move * -1
-			enemy.diff = 0
-			enemy.tick = 0
+			enemy.invertMove()
+			enemy.reset()
 			enemy.turn = false
 		}
 	}
 
 	if player.turn {
 		if !enemy.destroyed && !enemy.isAppearing {
-			player.diff += player.move * 5
+			player.executeMoving()
 		} else {
 			if player.move < 0 {
-				player.diff += player.move * 5
+				player.executeMoving()
 			} else {
-				player.diff = 0
-				player.tick = 0
+				player.reset()
 			}
 		}
 		if math.Abs(float64(player.diff)) > 50 {
-			player.move = player.move * -1
-			damage := math.Max(1, math.Floor(float64(player.attack)*0.5-float64(enemy.defense)*0.25))
+			player.invertMove()
+			damage := player.attackTo(&enemy)
 			defaultPositionX, defaultPositionY := EnemyDamage.getDefaultPosition()
 			newMessage := message{
 				value:      strconv.FormatFloat(damage, 'f', 0, 64),
@@ -206,15 +203,10 @@ func (m *MineSweeper) Update() error {
 				crl:        store.Data.Color.Red,
 			}
 			messages = append(messages, newMessage)
-			enemy.hp = math.Max(0, enemy.hp-damage)
-			if enemy.hp <= 0 {
-				enemy.destroyed = true
-			}
 		}
 		if player.diff <= 0 {
-			player.move = player.move * -1
-			player.diff = 0
-			player.tick = 0
+			player.invertMove()
+			player.reset()
 			if !enemy.destroyed && !enemy.isAppearing {
 				player.turn = false
 			}
@@ -222,6 +214,7 @@ func (m *MineSweeper) Update() error {
 		if enemy.destroyed {
 			enemy.blinkingTick += 1
 			if enemy.blinkingTick >= DestroyBlinkingMaxTick {
+				// 新しいモンスターを出現させる
 				lv := enemy.lv
 				enemy = Slime.enemyFactory(float64(lv + 1))
 				enemy.diff = 150
@@ -230,7 +223,7 @@ func (m *MineSweeper) Update() error {
 			}
 		}
 		if enemy.isAppearing {
-			enemy.diff += enemy.move * 5
+			enemy.executeMoving()
 			if enemy.diff < 0 {
 				enemy.diff = 0
 				enemy.isAppearing = false
@@ -246,8 +239,8 @@ func (m *MineSweeper) Update() error {
 		enemy.turn = true
 	}
 
-	player.activeBar = float64(player.tick) / float64(player.speed)
-	enemy.activeBar = float64(enemy.tick) / float64(enemy.speed)
+	player.updateActiveBar()
+	enemy.updateActiveBar()
 
 	// log.Println(fmt.Sprintf("PlayerTick: %d,    EnemyTick: %d", PlayerTick, EnemyTick))
 	// log.Println(fmt.Sprintf("PlayerActiveBar: %g", PlayerActiveBar))

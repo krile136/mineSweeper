@@ -62,7 +62,7 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	// キャラクターを描画
 	draw.DrawWithoutRect(screen, player.name, 1, 110+float64(player.diff), 40, 0)
 	if enemy.destroyed {
-		if isShowBlinking() {
+		if enemy.isShowBlinking() {
 			draw.DrawWithoutRect(screen, enemy.name, 1, EnemyBattlePositionX+float64(enemy.diff), 40, 0)
 		}
 	} else {

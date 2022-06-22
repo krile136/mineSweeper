@@ -70,7 +70,7 @@ func (c Character) getInitialPlayerStatus() status {
 		isAppearing:  false,
 	}
 	playerStatus.name = c.String()
-	player.nextExp = calcNextLevelUpExp()
+	player.nextExp = player.calcNextLevelUpExp()
 
 	return playerStatus
 }
@@ -133,46 +133,78 @@ func (c Character) statusGrowthRate() (hpRate, attackRate, defenseRate float64) 
 	}
 }
 
+// 対象へ攻撃する
+func (s status) attackTo(target *status) float64 {
+	damage := math.Max(1, math.Floor(float64(s.attack)*0.5-float64(target.defense)*0.25))
+	target.hp = math.Max(0, target.hp-damage)
+	if target.hp <= 0 {
+		target.destroyed = true
+	}
+	return damage
+}
+
+// アクティブバーを更新する
+func (s *status) updateActiveBar() {
+	s.activeBar = float64(s.tick) / float64(s.speed)
+}
+
 // 次のレベルアップまでの経験値を計算する
-func calcNextLevelUpExp() int {
+func (s status) calcNextLevelUpExp() int {
 	// 次の経験値の指数関数部分 base * (1.1 ^ (lv -1))
-	NextExpExponential := int(math.Floor(float64(BaseLevelUpExp) * math.Pow(1.1, float64(player.lv-1))))
+	NextExpExponential := int(math.Floor(float64(BaseLevelUpExp) * math.Pow(1.1, float64(s.lv-1))))
 	// 次の経験値の比例関数部分 lv * 15
-	NextExpProportional := player.lv * 15
+	NextExpProportional := s.lv * 15
 	return (NextExpExponential + NextExpProportional) / 2
 }
 
 // レベルアップを管理する
-func levelUp(exp int) (bool, int, int) {
+func (s *status) levelUp(exp int) (bool, int, int) {
 	isLevelUp := false
-	from := player.lv
-	to := player.lv
+	from := s.lv
+	to := s.lv
 
 	fmt.Printf("Get EXP: %d\n", exp)
 	for exp > 0 {
-		currentNextExp := player.nextExp
+		currentNextExp := s.nextExp
 		exp -= currentNextExp
 		if exp >= 0 {
-			player.lv += 1
-			player.maxHp += 20
-			player.hp = player.maxHp
-			player.attack += 5
-			player.defense += 3
-			to = player.lv
+			s.lv += 1
+			s.maxHp += 20
+			s.hp = s.maxHp
+			s.attack += 5
+			s.defense += 3
+			to = s.lv
 			isLevelUp = true
-			player.nextExp = calcNextLevelUpExp()
-			fmt.Printf("Level up: %d, PlayerNextExp: %d\n", player.lv, player.nextExp)
+			s.nextExp = s.calcNextLevelUpExp()
+			fmt.Printf("Level up: %d, NextExp: %d\n", s.lv, s.nextExp)
 		} else {
-			player.nextExp = exp * -1
-			fmt.Printf("not Level up    next: %d\n", player.nextExp)
+			s.nextExp = exp * -1
+			fmt.Printf("not Level up    next: %d\n", s.nextExp)
 		}
 	}
 	return isLevelUp, from, to
 }
 
-func isShowBlinking() bool {
-	if enemy.blinkingTick%(DestroyBlinkingInterval*2) < DestroyBlinkingInterval && enemy.blinkingTick <= DestroyBlinkingMaxTick {
+// 移動を実行する
+func (s *status) executeMoving() {
+	s.diff += s.move * 5
+}
+
+// 点滅しているか判定する
+func (s status) isShowBlinking() bool {
+	if s.blinkingTick%(DestroyBlinkingInterval*2) < DestroyBlinkingInterval && s.blinkingTick <= DestroyBlinkingMaxTick {
 		return true
 	}
 	return false
+}
+
+// 移動方向を反転させる
+func (s *status) invertMove() {
+	s.move = s.move * -1
+}
+
+// アクション終わったあとのリセット処理
+func (s *status) reset() {
+	s.diff = 0
+	s.tick = 0
 }
