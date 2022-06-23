@@ -1,6 +1,8 @@
 package minesweeper
 
-const id string = "mineSweeper"
+import "github.com/krile136/mineSweeper/types/route"
+
+const routeType route.RouteType = route.MineSweeper
 
 type MineSweeper struct {
 	rows          int
@@ -48,6 +50,6 @@ var (
 	GetExp int
 )
 
-func (m *MineSweeper) GetId() string {
-	return id
+func (m *MineSweeper) GetRouteType() route.RouteType {
+	return routeType
 }

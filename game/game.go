@@ -19,6 +19,7 @@ type Game struct {
 func NewGame() (*Game, error) {
 	// 初期画面としてtitle画面を設定
 	scene.Display = &title.Title{}
+	scene.Next = &title.Title{}
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -52,10 +53,11 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (g *Game) Update() error {
-	if scene.Display.GetId() != scene.Id {
-		scene.Display = route[scene.Id]
+	if scene.Display.GetRouteType() != scene.RouteType {
+		scene.Display = routeMap[scene.RouteType]
 		scene.Is_just_changed = true
 	}
+
 	scene.Display.Update()
 
 	if scene.Is_just_changed {

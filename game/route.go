@@ -4,9 +4,10 @@ import (
 	"github.com/krile136/mineSweeper/scenes/minesweeper"
 	"github.com/krile136/mineSweeper/scenes/scene"
 	"github.com/krile136/mineSweeper/scenes/title"
+	"github.com/krile136/mineSweeper/types/route"
 )
 
-var route = map[string]scene.Scene{
-	"title":       &title.Title{},
-	"mineSweeper": &minesweeper.MineSweeper{},
+var routeMap = map[route.RouteType]scene.Scene{
+	route.Title:       &title.Title{},
+	route.MineSweeper: &minesweeper.MineSweeper{},
 }
