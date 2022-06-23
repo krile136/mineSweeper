@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -34,6 +35,11 @@ func (m *MineSweeper) Update() error {
 		maxScrollX = math.Max(0, (32*float64(store.Data.MineSweeper.Columns))-float64(store.Data.Layout.OutsideWidth))
 		maxScrollY = math.Max(0, (32*float64(store.Data.MineSweeper.Rows)+float64(store.Data.Layout.BattleField))-float64(store.Data.Layout.OutsideHeight))
 		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
+
+		// ゲームに関するデータを初期化する
+		messages = []message{}
+		player = Player.getInitialPlayerStatus()
+		enemy = Slime.enemyFactory(1)
 
 	} else {
 		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
@@ -81,12 +87,25 @@ func (m *MineSweeper) Update() error {
 					log.Print("game over! (left click)")
 					m.field[y][x] = bomb
 				} else {
+					GetExp = 0
 					m.searchAround(x, y)
 					for len(nextCheck) > 0 {
 						search_y := nextCheck[0] / m.rows
 						search_x := nextCheck[0] % m.rows
-
 						m.searchAround(search_x, search_y)
+					}
+					isLevelUp, _, _ := player.levelUp(GetExp)
+					if isLevelUp {
+						levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
+						newMessage := message{
+							value:      "Level UP !!",
+							messageDiv: LevelUp,
+							x:          levelUpDefaultX,
+							y:          levelUpDefaultY,
+							tick:       0,
+							crl:        store.Data.Color.Orange,
+						}
+						messages = append(messages, newMessage)
 					}
 				}
 			}
@@ -100,6 +119,7 @@ func (m *MineSweeper) Update() error {
 			case flag:
 				m.field[y][x] = close
 			case one, two, three, four, five, six, seven, eight:
+				GetExp = 0
 				m.searchAroundOnNumberField(x, y)
 				for len(nextCheck) > 0 {
 					search_y := nextCheck[0] / m.rows
@@ -107,10 +127,135 @@ func (m *MineSweeper) Update() error {
 
 					m.searchAround(search_x, search_y)
 				}
+				isLevelUp, _, _ := player.levelUp(GetExp)
+				if isLevelUp {
+					levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
+					newMessage := message{
+						value:      "Level UP !!",
+						messageDiv: LevelUp,
+						x:          levelUpDefaultX,
+						y:          levelUpDefaultY,
+						tick:       0,
+						crl:        store.Data.Color.Orange,
+					}
+					messages = append(messages, newMessage)
+				}
+
 			default:
 				// 何もしない
 			}
 		}
 	}
+
+	// バトル周りの処理
+
+	// 攻撃タイミング処理
+	// タイマーを進めて、Speedと同じになった攻撃ターン
+	// どちらかの攻撃ターンになったときは、攻撃が完了するまで相手のタイマーは止まる
+	if !player.turn && !enemy.turn {
+		player.tick += 1
+		enemy.tick += 1
+	}
+
+	if enemy.turn {
+		enemy.executeMoving()
+		if math.Abs(float64(enemy.diff)) >= 50 {
+			enemy.invertMove()
+			damage := enemy.attackTo(&player)
+			defaultPositionX, defaultPositionY := PlayerDamage.getDefaultPosition()
+			newMessage := message{
+				value:      strconv.FormatFloat(damage, 'f', 0, 64),
+				messageDiv: PlayerDamage,
+				x:          defaultPositionX,
+				y:          defaultPositionY,
+				tick:       0,
+				crl:        store.Data.Color.Red,
+			}
+			messages = append(messages, newMessage)
+		}
+		if enemy.diff > 0 {
+			enemy.invertMove()
+			enemy.reset()
+			enemy.turn = false
+		}
+	}
+
+	if player.turn {
+		if !enemy.destroyed && !enemy.isAppearing {
+			player.executeMoving()
+		} else {
+			if player.move < 0 {
+				player.executeMoving()
+			} else {
+				player.reset()
+			}
+		}
+		if math.Abs(float64(player.diff)) > 50 {
+			player.invertMove()
+			damage := player.attackTo(&enemy)
+			defaultPositionX, defaultPositionY := EnemyDamage.getDefaultPosition()
+			newMessage := message{
+				value:      strconv.FormatFloat(damage, 'f', 0, 64),
+				messageDiv: EnemyDamage,
+				x:          defaultPositionX,
+				y:          defaultPositionY,
+				tick:       0,
+				crl:        store.Data.Color.Red,
+			}
+			messages = append(messages, newMessage)
+		}
+		if player.diff <= 0 {
+			player.invertMove()
+			player.reset()
+			if !enemy.destroyed && !enemy.isAppearing {
+				player.turn = false
+			}
+		}
+		if enemy.destroyed {
+			enemy.blinkingTick += 1
+			if enemy.blinkingTick >= DestroyBlinkingMaxTick {
+				// 新しいモンスターを出現させる
+				lv := enemy.lv
+				enemy = Slime.enemyFactory(float64(lv + 1))
+				enemy.diff = 150
+				enemy.move = -1
+				enemy.isAppearing = true
+			}
+		}
+		if enemy.isAppearing {
+			enemy.executeMoving()
+			if enemy.diff < 0 {
+				enemy.diff = 0
+				enemy.isAppearing = false
+				player.turn = false
+			}
+		}
+	}
+
+	if player.tick >= player.speed {
+		player.turn = true
+	}
+	if enemy.tick >= enemy.speed && !player.turn {
+		enemy.turn = true
+	}
+
+	player.updateActiveBar()
+	enemy.updateActiveBar()
+
+	// log.Println(fmt.Sprintf("PlayerTick: %d,    EnemyTick: %d", PlayerTick, EnemyTick))
+	// log.Println(fmt.Sprintf("PlayerActiveBar: %g", PlayerActiveBar))
+
+	// メッセージの更新処理
+	tempMessages := []message{}
+	for _, message := range messages {
+		message.update()
+		if message.isExist() {
+			tempMessages = append(tempMessages, message)
+		}
+		// fmt.Printf("messageDiv: %s, value: %s,  exist: %d \n", message.messageDiv.String(), message.value, message.messageDiv.getExistTick()-message.tick)
+		// fmt.Printf("mx: %d,  my; %d \n", int(message.x), int(message.y))
+	}
+	messages = tempMessages
+
 	return nil
 }

@@ -39,6 +39,13 @@ var (
 	barSlideY       float64
 	isBarDisplay    bool
 	BarDisplayFrame int
+
+	messages []message
+
+	player status
+	enemy  status
+
+	GetExp int
 )
 
 func (m *MineSweeper) GetId() string {

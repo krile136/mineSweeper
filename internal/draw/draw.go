@@ -2,6 +2,7 @@ package draw
 
 import (
 	"image"
+	"image/color"
 	_ "image/png"
 	"math"
 	"path"
@@ -10,6 +11,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/krile136/mineSweeper/internal/assets"
+	"github.com/krile136/mineSweeper/store"
 )
 
 var (
@@ -19,15 +21,19 @@ var (
 // 画像を描画する (Rectによる切り抜きあり)
 func Draw(screen *ebiten.Image, key string, x_coefficient, y_coefficient, x_coordinates, y_coordinates, angle float64, rect_base_x, rect_base_y, rect_area_x, rect_area_y int) {
 	var image *ebiten.Image = images[key].SubImage(image.Rect(rect_base_x, rect_base_y, rect_base_x+rect_area_x, rect_base_y+rect_area_y)).(*ebiten.Image)
-	calcAndDisplay(screen, image, x_coefficient, y_coefficient, x_coordinates, y_coordinates, angle)
+	op := calcOption(image, x_coefficient, y_coefficient, x_coordinates, y_coordinates, angle)
+	screen.DrawImage(image, op)
 }
 
 func DrawWithoutRect(screen *ebiten.Image, key string, coefficient, x_coordinates, y_coordinates, angle float64) {
 	var image *ebiten.Image = images[key]
-	calcAndDisplay(screen, image, coefficient, coefficient, x_coordinates, y_coordinates, angle)
+	op := calcOption(image, coefficient, coefficient, x_coordinates, y_coordinates, angle)
+	op = applyColor(op, store.Data.Color.Red)
+	screen.DrawImage(image, op)
+
 }
 
-func calcAndDisplay(screen *ebiten.Image, image *ebiten.Image, x_coefficient, y_coefficient, x_coordinates, y_coordinates, angle float64) {
+func calcOption(image *ebiten.Image, x_coefficient, y_coefficient, x_coordinates, y_coordinates, angle float64) *ebiten.DrawImageOptions {
 	// 画像のサイズを取得
 	w, h := image.Size()
 
@@ -49,9 +55,13 @@ func calcAndDisplay(screen *ebiten.Image, image *ebiten.Image, x_coefficient, y_
 	// 好きな位置へ移動させる
 	op.GeoM.Translate(x_coordinates, y_coordinates)
 
-	// 画像を描画する
-	screen.DrawImage(image, op)
+	return op
+}
 
+func applyColor(op *ebiten.DrawImageOptions, clr color.Color) *ebiten.DrawImageOptions {
+	op.ColorM.Apply(clr)
+
+	return op
 }
 
 // 画像リソースを読み込む
