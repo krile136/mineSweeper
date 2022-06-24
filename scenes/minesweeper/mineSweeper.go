@@ -1,6 +1,9 @@
 package minesweeper
 
-import "github.com/krile136/mineSweeper/enum/route"
+import (
+	"github.com/krile136/mineSweeper/enum/route"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
+)
 
 const routeType route.RouteType = route.MineSweeper
 
@@ -42,7 +45,8 @@ var (
 	isBarDisplay    bool
 	BarDisplayFrame int
 
-	messages []message
+	// messages []message
+	displayMessages []messages.MessageInterface
 
 	player status
 	enemy  status

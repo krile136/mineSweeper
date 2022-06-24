@@ -88,7 +88,8 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	text.DrawText(screen, fmt.Sprintf(" %d/%d", int(enemy.hp), int(enemy.maxHp)), 310-HpStringLength, 35, "M", store.Data.Color.Black)
 
 	// メッセージを描画
-	for _, v := range messages {
-		text.DrawText(screen, v.value, int(v.x), int(v.y), "M", v.crl)
+	for _, v := range displayMessages {
+		value, x, y, crl := v.GetFieldForDraw()
+		text.DrawText(screen, value, x, y, "M", crl)
 	}
 }

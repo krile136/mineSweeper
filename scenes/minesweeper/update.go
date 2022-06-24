@@ -8,6 +8,8 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/message"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
 	"github.com/krile136/mineSweeper/scenes/scene"
 	"github.com/krile136/mineSweeper/store"
 )
@@ -37,7 +39,8 @@ func (m *MineSweeper) Update() error {
 		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
 		// ゲームに関するデータを初期化する
-		messages = []message{}
+		// messages = []message{}
+		displayMessages = []messages.MessageInterface{}
 		player = Player.getInitialPlayerStatus()
 		enemy = Slime.enemyFactory(1)
 
@@ -96,16 +99,20 @@ func (m *MineSweeper) Update() error {
 					}
 					isLevelUp, _, _ := player.levelUp(GetExp)
 					if isLevelUp {
-						levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
-						newMessage := message{
-							value:      "Level UP !!",
-							messageDiv: LevelUp,
-							x:          levelUpDefaultX,
-							y:          levelUpDefaultY,
-							tick:       0,
-							crl:        store.Data.Color.Orange,
-						}
-						messages = append(messages, newMessage)
+						messageStruct := MessageMap[message.LevelUp]
+						displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
+						// levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
+						// newMessage := message{
+						// 	value:      "Level UP !!",
+						// 	messageDiv: LevelUp,
+						// 	x:          levelUpDefaultX,
+						// 	y:          levelUpDefaultY,
+						// 	tick:       0,
+						// 	crl:        store.Data.Color.Orange,
+						// }
+						// messages = append(messages, newMessage)
+
+						// displayMessages = append(displayMessages,))
 					}
 				}
 			}
@@ -129,16 +136,8 @@ func (m *MineSweeper) Update() error {
 				}
 				isLevelUp, _, _ := player.levelUp(GetExp)
 				if isLevelUp {
-					levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
-					newMessage := message{
-						value:      "Level UP !!",
-						messageDiv: LevelUp,
-						x:          levelUpDefaultX,
-						y:          levelUpDefaultY,
-						tick:       0,
-						crl:        store.Data.Color.Orange,
-					}
-					messages = append(messages, newMessage)
+					messageStruct := MessageMap[message.LevelUp]
+					displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
 				}
 
 			default:
@@ -162,16 +161,19 @@ func (m *MineSweeper) Update() error {
 		if math.Abs(float64(enemy.diff)) >= 50 {
 			enemy.invertMove()
 			damage := enemy.attackTo(&player)
-			defaultPositionX, defaultPositionY := PlayerDamage.getDefaultPosition()
-			newMessage := message{
-				value:      strconv.FormatFloat(damage, 'f', 0, 64),
-				messageDiv: PlayerDamage,
-				x:          defaultPositionX,
-				y:          defaultPositionY,
-				tick:       0,
-				crl:        store.Data.Color.Red,
-			}
-			messages = append(messages, newMessage)
+			// newMessage := message{
+			// 	value:      strconv.FormatFloat(damage, 'f', 0, 64),
+			// 	messageDiv: PlayerDamage,
+			// 	x:          defaultPositionX,
+			// 	y:          defaultPositionY,
+			// 	tick:       0,
+			// 	crl:        store.Data.Color.Red,
+			// }
+			// messages = append(messages, newMessage)
+			messageStruct := MessageMap[message.PlayerDamage]
+			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
+			displayMessages = append(displayMessages, messageStruct.New(value))
+
 		}
 		if enemy.diff > 0 {
 			enemy.invertMove()
@@ -193,16 +195,9 @@ func (m *MineSweeper) Update() error {
 		if math.Abs(float64(player.diff)) > 50 {
 			player.invertMove()
 			damage := player.attackTo(&enemy)
-			defaultPositionX, defaultPositionY := EnemyDamage.getDefaultPosition()
-			newMessage := message{
-				value:      strconv.FormatFloat(damage, 'f', 0, 64),
-				messageDiv: EnemyDamage,
-				x:          defaultPositionX,
-				y:          defaultPositionY,
-				tick:       0,
-				crl:        store.Data.Color.Red,
-			}
-			messages = append(messages, newMessage)
+			messageStruct := MessageMap[message.EnemyDamage]
+			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
+			displayMessages = append(displayMessages, messageStruct.New(value))
 		}
 		if player.diff <= 0 {
 			player.invertMove()
@@ -246,16 +241,16 @@ func (m *MineSweeper) Update() error {
 	// log.Println(fmt.Sprintf("PlayerActiveBar: %g", PlayerActiveBar))
 
 	// メッセージの更新処理
-	tempMessages := []message{}
-	for _, message := range messages {
-		message.update()
-		if message.isExist() {
-			tempMessages = append(tempMessages, message)
+	tempMessages := []messages.MessageInterface{}
+	for _, message := range displayMessages {
+		newMessage := message.Update()
+		if newMessage.IsExist() {
+			tempMessages = append(tempMessages, newMessage)
 		}
 		// fmt.Printf("messageDiv: %s, value: %s,  exist: %d \n", message.messageDiv.String(), message.value, message.messageDiv.getExistTick()-message.tick)
 		// fmt.Printf("mx: %d,  my; %d \n", int(message.x), int(message.y))
 	}
-	messages = tempMessages
+	displayMessages = tempMessages
 
 	return nil
 }
