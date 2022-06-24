@@ -2,7 +2,7 @@ package scene
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/krile136/mineSweeper/types/route"
+	"github.com/krile136/mineSweeper/enum/route"
 )
 
 var (

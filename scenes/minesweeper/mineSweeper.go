@@ -1,6 +1,6 @@
 package minesweeper
 
-import "github.com/krile136/mineSweeper/types/route"
+import "github.com/krile136/mineSweeper/enum/route"
 
 const routeType route.RouteType = route.MineSweeper
 
