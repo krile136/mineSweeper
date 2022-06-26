@@ -8,11 +8,7 @@ import (
 
 // 敵が受けたダメージのメッセージ
 type LevelUp struct {
-	value string
-	x     float64
-	y     float64
-	tick  int
-	crl   color.Color
+	*abstractMessage
 }
 
 /*
@@ -20,14 +16,12 @@ type LevelUp struct {
 */
 
 func (l LevelUp) New(value string) MessageInterface {
-	new := LevelUp{}
-	new.value = value
-	new.x, new.y = l.defaultPosition()
-	new.tick = 0
-	new.crl = store.Data.Color.Orange
+	x, y, existTick, crl := l.defaultField()
+	am := l.makeAbstractMessage(value, x, y, crl, existTick)
+	new := LevelUp{am}
 	return new
-
 }
+
 func (l LevelUp) String() string {
 	return "Level UP !!"
 }
@@ -42,35 +36,21 @@ func (l LevelUp) Update() MessageInterface {
 	return new
 }
 
-func (l LevelUp) IsExist() bool {
-	return l.tick <= l.existTick()
-}
-
-func (l LevelUp) GetFieldForDraw() (value string, x, y int, crl color.Color) {
-	value = l.value
-	x = int(l.x)
-	y = int(l.y)
-	crl = l.crl
-	return
-}
-
 /*
 -------------------- Private Method --------------------
 */
 
-func (l LevelUp) defaultPosition() (x, y float64) {
+func (l LevelUp) defaultField() (x, y float64, existTick int, crl color.Color) {
 	x = 100
 	y = 0
+	existTick = 70
+	crl = store.Data.Color.Orange
 	return
-}
-
-func (l LevelUp) existTick() int {
-	return 70
 }
 
 func (l LevelUp) moveValue(tick int) (x, y float64) {
 	g := float64(-0.1)
-	v := g * float64(l.existTick()) * -0.5
+	v := g * float64(l.existTick) * -0.5
 	diffY := v + g*float64(tick)
 
 	x = 0

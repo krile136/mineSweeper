@@ -8,11 +8,7 @@ import (
 
 // 敵が受けたダメージのメッセージ
 type EnemyDamage struct {
-	value string
-	x     float64
-	y     float64
-	tick  int
-	crl   color.Color
+	*abstractMessage
 }
 
 /*
@@ -20,14 +16,12 @@ type EnemyDamage struct {
 */
 
 func (e EnemyDamage) New(value string) MessageInterface {
-	new := EnemyDamage{}
-	new.value = value
-	new.x, new.y = e.defaultPosition()
-	new.tick = 0
-	new.crl = store.Data.Color.Red
+	x, y, existTick, crl := e.defaultField()
+	am := e.makeAbstractMessage(value, x, y, crl, existTick)
+	new := EnemyDamage{am}
 	return new
-
 }
+
 func (e EnemyDamage) String() string {
 	return "EnemyDamage"
 }
@@ -42,35 +36,21 @@ func (e EnemyDamage) Update() MessageInterface {
 	return new
 }
 
-func (e EnemyDamage) IsExist() bool {
-	return e.tick <= e.existTick()
-}
-
-func (e EnemyDamage) GetFieldForDraw() (value string, x, y int, crl color.Color) {
-	value = e.value
-	x = int(e.x)
-	y = int(e.y)
-	crl = e.crl
-	return
-}
-
 /*
 -------------------- Private Method --------------------
 */
 
-func (e EnemyDamage) defaultPosition() (x, y float64) {
+func (e EnemyDamage) defaultField() (x, y float64, existTick int, crl color.Color) {
 	x = 210
 	y = 55
+	existTick = 40
+	crl = store.Data.Color.Red
 	return
-}
-
-func (e EnemyDamage) existTick() int {
-	return 40
 }
 
 func (e EnemyDamage) moveValue(tick int) (x, y float64) {
 	g := float64(0.1)
-	v := g * float64(e.existTick()) * -0.5
+	v := g * float64(e.existTick) * -0.5
 	diffY := v + g*float64(tick)
 
 	x = 1
