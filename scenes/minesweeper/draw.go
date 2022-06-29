@@ -76,11 +76,11 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	draw.Draw(screen, "minesweeper", 1.2*enemy.activeBar, 0.2, 195-(1-enemy.activeBar)*float64(p)*0.6, 70, 0, p*7, 0, p, p)
 
 	// 文字を描画
-	text.DrawText(screen, fmt.Sprintf("Lv %d", player.lv), 100, 10, "S", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf("Lv %d", ply.Lv()), 100, 10, "S", store.Data.Color.Black)
 	text.DrawText(screen, "HP", 5, 20, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d/%d", int(player.hp), int(player.maxHp)), 5, 35, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d/%d", ply.Hp(), ply.MaxHp()), 5, 35, "M", store.Data.Color.Black)
 	text.DrawText(screen, "NEXT", 5, 55, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d", player.nextExp), 5, 70, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d", ply.NextExp()), 5, 70, "M", store.Data.Color.Black)
 
 	HpStringLength := text.Length(fmt.Sprintf(" %d/%d", int(enemy.hp), int(enemy.maxHp)), "M")
 	text.DrawText(screen, fmt.Sprintf("Lv %d", enemy.lv), 180, 10, "S", store.Data.Color.Black)

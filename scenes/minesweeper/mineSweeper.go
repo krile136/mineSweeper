@@ -2,6 +2,7 @@ package minesweeper
 
 import (
 	"github.com/krile136/mineSweeper/enum/route"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterStatus"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
 )
 
@@ -50,6 +51,9 @@ var (
 
 	player status
 	enemy  status
+
+	ply  characterStatus.CharacterStatusInterface
+	enmy characterStatus.CharacterStatusInterface
 
 	GetExp int
 )

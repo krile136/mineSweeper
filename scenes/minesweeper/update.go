@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/character"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
 	"github.com/krile136/mineSweeper/scenes/scene"
@@ -44,6 +45,8 @@ func (m *MineSweeper) Update() error {
 		player = Player.getInitialPlayerStatus()
 		enemy = Slime.enemyFactory(1)
 
+		ply = CharacterStatusMap[character.Player].New(1)
+		enmy = CharacterStatusMap[character.Slime].New(1)
 	} else {
 		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 			m.placeBombs()
@@ -98,21 +101,10 @@ func (m *MineSweeper) Update() error {
 						m.searchAround(search_x, search_y)
 					}
 					isLevelUp, _, _ := player.levelUp(GetExp)
+					_, ply = ply.LevelUp(GetExp)
 					if isLevelUp {
 						messageStruct := MessageMap[message.LevelUp]
 						displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
-						// levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
-						// newMessage := message{
-						// 	value:      "Level UP !!",
-						// 	messageDiv: LevelUp,
-						// 	x:          levelUpDefaultX,
-						// 	y:          levelUpDefaultY,
-						// 	tick:       0,
-						// 	crl:        store.Data.Color.Orange,
-						// }
-						// messages = append(messages, newMessage)
-
-						// displayMessages = append(displayMessages,))
 					}
 				}
 			}
@@ -135,6 +127,7 @@ func (m *MineSweeper) Update() error {
 					m.searchAround(search_x, search_y)
 				}
 				isLevelUp, _, _ := player.levelUp(GetExp)
+				_, ply = ply.LevelUp(GetExp)
 				if isLevelUp {
 					messageStruct := MessageMap[message.LevelUp]
 					displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
@@ -155,21 +148,16 @@ func (m *MineSweeper) Update() error {
 		player.tick += 1
 		enemy.tick += 1
 	}
+	if !ply.Turn() && !enmy.Turn() {
+		ply = ply.Update()
+		enmy = enmy.Update()
+	}
 
 	if enemy.turn {
 		enemy.executeMoving()
 		if math.Abs(float64(enemy.diff)) >= 50 {
 			enemy.invertMove()
 			damage := enemy.attackTo(&player)
-			// newMessage := message{
-			// 	value:      strconv.FormatFloat(damage, 'f', 0, 64),
-			// 	messageDiv: PlayerDamage,
-			// 	x:          defaultPositionX,
-			// 	y:          defaultPositionY,
-			// 	tick:       0,
-			// 	crl:        store.Data.Color.Red,
-			// }
-			// messages = append(messages, newMessage)
 			messageStruct := MessageMap[message.PlayerDamage]
 			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
 			displayMessages = append(displayMessages, messageStruct.New(value))

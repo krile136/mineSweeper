@@ -176,10 +176,10 @@ func (s *status) levelUp(exp int) (bool, int, int) {
 			to = s.lv
 			isLevelUp = true
 			s.nextExp = s.calcNextLevelUpExp()
-			fmt.Printf("Level up: %d, NextExp: %d\n", s.lv, s.nextExp)
+			// fmt.Printf("Level up: %d, NextExp: %d\n", s.lv, s.nextExp)
 		} else {
 			s.nextExp = exp * -1
-			fmt.Printf("not Level up    next: %d\n", s.nextExp)
+			// fmt.Printf("not Level up    next: %d\n", s.nextExp)
 		}
 	}
 	return isLevelUp, from, to
