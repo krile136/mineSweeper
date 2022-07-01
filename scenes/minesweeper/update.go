@@ -8,7 +8,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/krile136/mineSweeper/scenes/minesweeper/character"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
 	"github.com/krile136/mineSweeper/scenes/scene"
@@ -40,13 +39,15 @@ func (m *MineSweeper) Update() error {
 		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
 		// ゲームに関するデータを初期化する
-		// messages = []message{}
 		displayMessages = []messages.MessageInterface{}
 		player = Player.getInitialPlayerStatus()
 		enemy = Slime.enemyFactory(1)
 
-		ply = CharacterStatusMap[character.Player].New(1)
-		enmy = CharacterStatusMap[character.Slime].New(1)
+		// 各キャラクターの初期ステータスなどが入った配列を初期化する
+		initCharacterSlice()
+
+		// playerとenemyに初期値をセットする
+		setInitialCharacter()
 	} else {
 		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 			m.placeBombs()
@@ -153,14 +154,31 @@ func (m *MineSweeper) Update() error {
 		enmy = enmy.Update()
 	}
 
+	if enmy.Turn() {
+		enemyDraw.ExecuteMoving()
+		if enemyDraw.CanExecuteInvertAtTop() {
+			enemyDraw = enemyDraw.InvertDirection()
+			damage := enmy.GetDamageAmount(ply)
+			ply = enmy.AttackTo(ply)
+			messageStruct := MessageMap[message.PlayerDamage]
+			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
+			displayMessages = append(displayMessages, messageStruct.New(value))
+		}
+		if enemyDraw.CanExecuteInvertAtBase() {
+			enemyDraw = enemyDraw.FinishTurn()
+			enmy = enmy.FinishTurn()
+		}
+
+	}
+
 	if enemy.turn {
 		enemy.executeMoving()
 		if math.Abs(float64(enemy.diff)) >= 50 {
 			enemy.invertMove()
-			damage := enemy.attackTo(&player)
-			messageStruct := MessageMap[message.PlayerDamage]
-			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
-			displayMessages = append(displayMessages, messageStruct.New(value))
+			// damage := enemy.attackTo(&player)
+			// messageStruct := MessageMap[message.PlayerDamage]
+			// var value string = strconv.FormatFloat(damage, 'f', 0, 64)
+			// displayMessages = append(displayMessages, messageStruct.New(value))
 
 		}
 		if enemy.diff > 0 {

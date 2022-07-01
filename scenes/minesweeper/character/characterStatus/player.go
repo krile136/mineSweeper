@@ -24,6 +24,11 @@ func (p Player) AttackTo(target CharacterStatusInterface) CharacterStatusInterfa
 	return newTarget
 }
 
+func (p Player) GetDamageAmount(target CharacterStatusInterface) (damage float64) {
+	damage = p.calcDamage(p.attack, target.getDefense())
+	return
+}
+
 // レベルアップを実施する
 func (p Player) LevelUp(exp int) (bool, CharacterStatusInterface) {
 	new := p
@@ -45,6 +50,20 @@ func (p Player) Update() CharacterStatusInterface {
 	new := p
 	new.tick += 1
 	p.activeBar = float64(new.tick) / float64(new.speed)
+	return new
+}
+
+func (p Player) InvertTurn() CharacterStatusInterface {
+	new := p
+	new.turn = !p.turn
+	return new
+}
+
+func (p Player) FinishTurn() CharacterStatusInterface {
+	new := p
+	new.turn = false
+	new.tick = 0
+
 	return new
 }
 

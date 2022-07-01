@@ -21,6 +21,11 @@ func (s Slime) AttackTo(target CharacterStatusInterface) CharacterStatusInterfac
 	return newTarget
 }
 
+func (s Slime) GetDamageAmount(target CharacterStatusInterface) (damage float64) {
+	damage = s.calcDamage(s.attack, target.getDefense())
+	return
+}
+
 // レベルアップを実施する
 func (s Slime) LevelUp(exp int) (bool, CharacterStatusInterface) {
 	new := s
@@ -42,6 +47,20 @@ func (s Slime) Update() CharacterStatusInterface {
 	new := s
 	new.tick += 1
 	s.activeBar = float64(new.tick) / float64(new.speed)
+	return new
+}
+
+func (s Slime) InvertTurn() CharacterStatusInterface {
+	new := s
+	new.turn = !s.turn
+	return new
+}
+
+func (s Slime) FinishTurn() CharacterStatusInterface {
+	new := s
+	new.turn = false
+	new.tick = 0
+
 	return new
 }
 

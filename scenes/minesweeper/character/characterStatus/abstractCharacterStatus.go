@@ -45,6 +45,11 @@ func (a *abstractCharacterStatus) Turn() bool {
 	return a.turn
 }
 
+func (a *abstractCharacterStatus) calcDamage(currentAttack, targetDefense float64) (damage float64) {
+	damage = math.Max(1, math.Floor(currentAttack*0.5-targetDefense*0.25))
+	return
+}
+
 // 経験値付与およびステータス変化
 func (a *abstractCharacterStatus) addExp(exp int) (
 	isLevelUp bool,
@@ -109,11 +114,6 @@ func (a *abstractCharacterStatus) makeAbstractCharacterStatus(
 		attackRate:  attackRate,
 		defenseRate: defenseRate,
 	}
-	return
-}
-
-func (a *abstractCharacterStatus) calcDamage(currentAttack, targetDefense float64) (damage float64) {
-	damage = math.Max(1, math.Floor(currentAttack*0.5-targetDefense*0.25))
 	return
 }
 

@@ -3,6 +3,6 @@ package characterStatus
 type condition int
 
 const (
-	destroyed condition = iota
+	dead condition = iota
 	appearing
 )
