@@ -1,6 +1,8 @@
 package characterStatus
 
-import "math"
+import (
+	"math"
+)
 
 type Slime struct {
 	*abstractCharacterStatus
@@ -56,11 +58,28 @@ func (s Slime) InvertTurn() CharacterStatusInterface {
 	return new
 }
 
+func (s Slime) SetTurn(boolean bool) CharacterStatusInterface {
+	new := s
+	new.turn = boolean
+	return new
+}
+
 func (s Slime) FinishTurn() CharacterStatusInterface {
 	new := s
 	new.turn = false
 	new.tick = 0
 
+	return new
+}
+
+func (s Slime) AddCondition(cond condition) CharacterStatusInterface {
+	new := s
+	new.conditions = append(new.conditions, cond)
+	return new
+}
+
+func (s Slime) SetInitialStatus() CharacterStatusInterface {
+	new := s.AddCondition(Appearing)
 	return new
 }
 
@@ -104,20 +123,20 @@ func (s Slime) defaultField() (
 	baseNextExp int,
 	hpRate, attackRate, defenseRate float64,
 ) {
-	name = "Player"
+	name = "slime"
 	lv = 1
-	hp = 100
-	maxHp = 100
+	hp = 50
+	maxHp = 50
 	nextExp = 10
-	speed = 100
+	speed = 160
 	tick = 0
-	attack = 10
-	defense = 5
+	attack = 5
+	defense = 1
 	activeBar = 0
 	baseNextExp = 50
-	hpRate = 30
-	attackRate = 5
-	defenseRate = 3
+	hpRate = 10
+	attackRate = 2
+	defenseRate = 1
 
 	return
 }

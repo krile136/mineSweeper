@@ -1,6 +1,8 @@
 package minesweeper
 
 import (
+	"fmt"
+
 	"github.com/krile136/mineSweeper/scenes/minesweeper/character"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterDraw"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterStatus"
@@ -11,6 +13,7 @@ var playerDrawSlice []characterDraw.CharacterDrawInterface
 var enemyStatusSlice []characterStatus.CharacterStatusInterface
 var enemyDrawSlice []characterDraw.CharacterDrawInterface
 
+// ゲーム開始直後のキャラクターとエネミーをセットする
 func setInitialCharacter() {
 	ply = playerStatusSlice[0]
 	playerStatusSlice = playerStatusSlice[:1]
@@ -23,20 +26,28 @@ func setInitialCharacter() {
 	enemyDrawSlice = enemyDrawSlice[:1]
 }
 
+// 次のエネミーをセットする
+func setNextEnemy() {
+	enmy = enemyStatusSlice[0]
+	enemyStatusSlice = enemyStatusSlice[:1]
+	enemyDraw = enemyDrawSlice[0]
+	enemyDrawSlice = enemyDrawSlice[:1]
+}
+
 // キャラクターの配列を初期化する
 func initCharacterSlice() {
 	// プレイヤーに関する初期値をセット
 	setPlayerSlice(character.Player, 1)
 
 	// モンスターに関する初期値をセット
-	setEnemySlice(character.Slime, 1)
+	setInitialEnemySlice(character.Slime, 1)
 	setEnemySlice(character.Slime, 3)
 }
 
 // プレイヤーに関するデータを詰める
 func setPlayerSlice(t character.CharacterType, lv int) {
 	status := characterStatusMap[t].New(lv)
-	draw := characterDrawMap[t]
+	draw := characterDrawMap[t].New()
 
 	playerStatusSlice = append(playerStatusSlice, status)
 	playerDrawSlice = append(playerDrawSlice, draw)
@@ -45,7 +56,23 @@ func setPlayerSlice(t character.CharacterType, lv int) {
 // 敵に関するデータを詰める
 func setEnemySlice(t character.CharacterType, lv int) {
 	status := characterStatusMap[t].New(lv)
-	draw := characterDrawMap[t]
+	draw := characterDrawMap[t].New()
+
+	status = status.SetInitialStatus()
+	draw = draw.SetInitialDraw()
+
+	enemyStatusSlice = append(enemyStatusSlice, status)
+	enemyDrawSlice = append(enemyDrawSlice, draw)
+}
+
+// 一番最初の敵のステータスを詰める
+func setInitialEnemySlice(t character.CharacterType, lv int) {
+	status := characterStatusMap[t].New(lv)
+	draw := characterDrawMap[t].New()
+
+	fmt.Printf("enemyName: %s\n", status.Name())
+	if draw.CanExecuteInvertAtBase() {
+	}
 
 	enemyStatusSlice = append(enemyStatusSlice, status)
 	enemyDrawSlice = append(enemyDrawSlice, draw)

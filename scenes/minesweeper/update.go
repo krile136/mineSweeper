@@ -1,7 +1,6 @@
 package minesweeper
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"strconv"
@@ -36,7 +35,6 @@ func (m *MineSweeper) Update() error {
 		// ブロックの大きさは、setWIndowの幅 / Layoutの幅に拡大される
 		maxScrollX = math.Max(0, (32*float64(store.Data.MineSweeper.Columns))-float64(store.Data.Layout.OutsideWidth))
 		maxScrollY = math.Max(0, (32*float64(store.Data.MineSweeper.Rows)+float64(store.Data.Layout.BattleField))-float64(store.Data.Layout.OutsideHeight))
-		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
 		// ゲームに関するデータを初期化する
 		displayMessages = []messages.MessageInterface{}
@@ -155,7 +153,7 @@ func (m *MineSweeper) Update() error {
 	}
 
 	if enmy.Turn() {
-		enemyDraw.ExecuteMoving()
+		enemyDraw = enemyDraw.ExecuteMoving()
 		if enemyDraw.CanExecuteInvertAtTop() {
 			enemyDraw = enemyDraw.InvertDirection()
 			damage := enmy.GetDamageAmount(ply)
@@ -188,6 +186,53 @@ func (m *MineSweeper) Update() error {
 		}
 	}
 
+	if ply.Turn() {
+		// タイマーが止まるときの専用処理
+		if enmy.StopTimer() {
+			if playerDraw.CanExecuteInvertAtBase() {
+				playerDraw = playerDraw.ExecuteMoving()
+			} else {
+				ply = ply.FinishTurn()
+				playerDraw = playerDraw.FinishTurn()
+			}
+		} else {
+			playerDraw = playerDraw.ExecuteMoving()
+		}
+
+		if playerDraw.CanExecuteInvertAtTop() {
+			log.Printf("Player Invert At Top")
+			playerDraw = playerDraw.InvertDirection()
+			damage := ply.GetDamageAmount(enmy)
+			enmy = ply.AttackTo(enmy)
+			messageStruct := MessageMap[message.EnemyDamage]
+			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
+			displayMessages = append(displayMessages, messageStruct.New(value))
+		}
+		if playerDraw.CanExecuteInvertAtBase() {
+			log.Printf("player turn finished")
+			ply = ply.FinishTurn()
+			playerDraw = playerDraw.FinishTurn()
+			if enmy.StopTimer() {
+				// タイマーストップ状態ではプレイヤーのターン継続する（敵が現れたらターン終了）
+				ply = ply.InvertTurn()
+			}
+		}
+
+		if enmy.Dead() {
+			enemyDraw = enemyDraw.UpdateBlinking()
+			if enemyDraw.IsFinishDeadBlinking() {
+				setNextEnemy()
+			}
+		}
+		if enmy.Appearing() {
+			enemyDraw.ExecuteMoving()
+			if enemyDraw.CanExecuteInvertAtBase() {
+				enmy = enmy.FinishTurn()
+				ply = ply.InvertTurn()
+			}
+		}
+	}
+
 	if player.turn {
 		if !enemy.destroyed && !enemy.isAppearing {
 			player.executeMoving()
@@ -200,10 +245,10 @@ func (m *MineSweeper) Update() error {
 		}
 		if math.Abs(float64(player.diff)) > 50 {
 			player.invertMove()
-			damage := player.attackTo(&enemy)
-			messageStruct := MessageMap[message.EnemyDamage]
-			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
-			displayMessages = append(displayMessages, messageStruct.New(value))
+			// damage := player.attackTo(&enemy)
+			// messageStruct := MessageMap[message.EnemyDamage]
+			// var value string = strconv.FormatFloat(damage, 'f', 0, 64)
+			// displayMessages = append(displayMessages, messageStruct.New(value))
 		}
 		if player.diff <= 0 {
 			player.invertMove()
@@ -238,6 +283,13 @@ func (m *MineSweeper) Update() error {
 	}
 	if enemy.tick >= enemy.speed && !player.turn {
 		enemy.turn = true
+	}
+
+	if ply.CanTurnOn() {
+		ply = ply.SetTurn(true)
+	}
+	if enmy.CanTurnOn() && !ply.Turn() {
+		enmy = enmy.SetTurn(true)
 	}
 
 	player.updateActiveBar()

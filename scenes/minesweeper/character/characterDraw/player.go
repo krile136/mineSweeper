@@ -18,6 +18,17 @@ func (p Player) ExecuteMoving() CharacterDrawInterface {
 	return new
 }
 
+func (p Player) CanExecuteInvertAtBase() bool {
+	return p.difference <= 0
+}
+
+func (p Player) UpdateBlinking() CharacterDrawInterface {
+	new := p
+	new.blinkingTick += 1
+
+	return new
+}
+
 // 移動方向を反転させる
 func (p Player) InvertDirection() CharacterDrawInterface {
 	new := p
@@ -28,13 +39,22 @@ func (p Player) InvertDirection() CharacterDrawInterface {
 // ターンを終了させる
 func (p Player) FinishTurn() CharacterDrawInterface {
 	new := p
-	new.direction, new.difference = p.defaultField()
+	new.positionX, new.positionY, new.direction, new.difference = p.defaultField()
 
 	return new
 }
 
+func (p Player) SetInitialDraw() CharacterDrawInterface {
+	new := p
+	new.difference = -150
+	new.direction = 1
+	return new
+}
+
 // デフォルトのフィールド値を取得する
-func (p Player) defaultField() (direction, difference float64) {
+func (p Player) defaultField() (positionX, positionY, direction, difference float64) {
+	positionX = 110
+	positionY = 40
 	direction = 1
 	difference = 0
 	return

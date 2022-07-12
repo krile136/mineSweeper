@@ -59,11 +59,28 @@ func (p Player) InvertTurn() CharacterStatusInterface {
 	return new
 }
 
+func (p Player) SetTurn(boolean bool) CharacterStatusInterface {
+	new := p
+	new.turn = boolean
+	return new
+}
+
 func (p Player) FinishTurn() CharacterStatusInterface {
 	new := p
 	new.turn = false
 	new.tick = 0
 
+	return new
+}
+
+func (p Player) AddCondition(cond condition) CharacterStatusInterface {
+	new := p
+	new.conditions = append(new.conditions, cond)
+	return new
+}
+
+func (p Player) SetInitialStatus() CharacterStatusInterface {
+	new := p.AddCondition(Appearing)
 	return new
 }
 
@@ -107,7 +124,7 @@ func (p Player) defaultField() (
 	baseNextExp int,
 	hpRate, attackRate, defenseRate float64,
 ) {
-	name = "Player"
+	name = "character"
 	lv = 1
 	hp = 100
 	maxHp = 100

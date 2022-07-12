@@ -7,7 +7,7 @@ type Slime struct {
 // コンストラクタ
 func (s Slime) New() (new CharacterDrawInterface) {
 	acd := s.makeAbstractCharacterDraw(s.defaultField())
-	new = Player{acd}
+	new = Slime{acd}
 	return
 }
 
@@ -15,6 +15,17 @@ func (s Slime) New() (new CharacterDrawInterface) {
 func (s Slime) ExecuteMoving() CharacterDrawInterface {
 	new := s
 	new.addDirectionToDifference()
+	return new
+}
+
+func (s Slime) CanExecuteInvertAtBase() bool {
+	return s.difference >= 0
+}
+
+func (s Slime) UpdateBlinking() CharacterDrawInterface {
+	new := s
+	new.blinkingTick += 1
+
 	return new
 }
 
@@ -28,13 +39,22 @@ func (s Slime) InvertDirection() CharacterDrawInterface {
 // ターンを終了させる
 func (s Slime) FinishTurn() CharacterDrawInterface {
 	new := s
-	new.direction, new.difference = s.defaultField()
+	new.positionX, new.positionY, new.direction, new.difference = s.defaultField()
 
 	return new
 }
 
+func (s Slime) SetInitialDraw() CharacterDrawInterface {
+	new := s
+	new.difference = 150
+	new.direction = -1
+	return new
+}
+
 // デフォルトのフィールド値を取得する
-func (s Slime) defaultField() (direction, difference float64) {
+func (s Slime) defaultField() (positionX, positionY, direction, difference float64) {
+	positionX = 195
+	positionY = 40
 	direction = -1
 	difference = 0
 	return

@@ -34,7 +34,7 @@ func (a *abstractCharacterStatus) Hp() int {
 }
 
 func (a *abstractCharacterStatus) MaxHp() int {
-	return int(a.hp)
+	return int(a.maxHp)
 }
 
 func (a *abstractCharacterStatus) NextExp() int {
@@ -43,6 +43,50 @@ func (a *abstractCharacterStatus) NextExp() int {
 
 func (a *abstractCharacterStatus) Turn() bool {
 	return a.turn
+}
+
+func (a *abstractCharacterStatus) Name() string {
+	return a.name
+}
+
+func (a *abstractCharacterStatus) ActiveBar() float64 {
+	return a.activeBar
+}
+
+func (a *abstractCharacterStatus) StopTimer() bool {
+	isDead := false
+	isAppear := false
+	for _, condition := range a.conditions {
+		if condition == Dead {
+			isDead = true
+		}
+		if condition == Appearing {
+			isAppear = true
+		}
+	}
+	return isDead || isAppear
+}
+
+func (a *abstractCharacterStatus) Dead() bool {
+	for _, condition := range a.conditions {
+		if condition == Dead {
+			return true
+		}
+	}
+	return false
+}
+
+func (a *abstractCharacterStatus) Appearing() bool {
+	for _, condition := range a.conditions {
+		if condition == Appearing {
+			return true
+		}
+	}
+	return false
+}
+
+func (a *abstractCharacterStatus) CanTurnOn() bool {
+	return a.tick >= a.speed
 }
 
 func (a *abstractCharacterStatus) calcDamage(currentAttack, targetDefense float64) (damage float64) {

@@ -60,20 +60,20 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	draw.Draw(screen, "pipo-battlebg001", 1, 0.5, float64(store.Data.Layout.OutsideWidth)/2, float64(store.Data.Layout.BattleField)/2, 0, sliceOffsetX, sliceOffsetY, store.Data.Layout.OutsideWidth, store.Data.Layout.BattleField*2)
 
 	// キャラクターを描画
-	draw.DrawWithoutRect(screen, player.name, 1, 110+float64(player.diff), 40, 0)
+	draw.DrawWithoutRect(screen, ply.Name(), 1, playerDraw.CurrentPosition(), playerDraw.PositionY(), 0)
 	if enemy.destroyed {
 		if enemy.isShowBlinking() {
-			draw.DrawWithoutRect(screen, enemy.name, 1, EnemyBattlePositionX+float64(enemy.diff), 40, 0)
+			draw.DrawWithoutRect(screen, enmy.Name(), 1, enemyDraw.CurrentPosition(), enemyDraw.PositionY(), 0)
 		}
 	} else {
-		draw.DrawWithoutRect(screen, enemy.name, 1, EnemyBattlePositionX+float64(enemy.diff), 40, 0)
+		draw.DrawWithoutRect(screen, enmy.Name(), 1, enemyDraw.CurrentPosition(), enemyDraw.PositionY(), 0)
 	}
 
 	// アクティブバーを描画
 	draw.Draw(screen, "minesweeper", 1.2, 0.2, 110, 70, 0, p*5, 0, p, p)
-	draw.Draw(screen, "minesweeper", 1.2*player.activeBar, 0.2, 110-(1-player.activeBar)*float64(p)*0.6, 70, 0, p*7, 0, p, p)
+	draw.Draw(screen, "minesweeper", 1.2*ply.ActiveBar(), 0.2, 110-(1-ply.ActiveBar())*float64(p)*0.6, 70, 0, p*7, 0, p, p)
 	draw.Draw(screen, "minesweeper", 1.2, 0.2, 195, 70, 0, p*5, 0, p, p)
-	draw.Draw(screen, "minesweeper", 1.2*enemy.activeBar, 0.2, 195-(1-enemy.activeBar)*float64(p)*0.6, 70, 0, p*7, 0, p, p)
+	draw.Draw(screen, "minesweeper", 1.2*enmy.ActiveBar(), 0.2, 195-(1-enmy.ActiveBar())*float64(p)*0.6, 70, 0, p*7, 0, p, p)
 
 	// 文字を描画
 	text.DrawText(screen, fmt.Sprintf("Lv %d", ply.Lv()), 100, 10, "S", store.Data.Color.Black)
@@ -82,10 +82,10 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	text.DrawText(screen, "NEXT", 5, 55, "M", store.Data.Color.Black)
 	text.DrawText(screen, fmt.Sprintf(" %d", ply.NextExp()), 5, 70, "M", store.Data.Color.Black)
 
-	HpStringLength := text.Length(fmt.Sprintf(" %d/%d", int(enemy.hp), int(enemy.maxHp)), "M")
-	text.DrawText(screen, fmt.Sprintf("Lv %d", enemy.lv), 180, 10, "S", store.Data.Color.Black)
+	HpStringLength := text.Length(fmt.Sprintf(" %d/%d", enmy.Hp(), enmy.MaxHp()), "M")
+	text.DrawText(screen, fmt.Sprintf("Lv %d", enmy.Lv()), 180, 10, "S", store.Data.Color.Black)
 	text.DrawText(screen, "HP", 300, 20, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d/%d", int(enemy.hp), int(enemy.maxHp)), 310-HpStringLength, 35, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d/%d", enmy.Hp(), enmy.MaxHp()), 310-HpStringLength, 35, "M", store.Data.Color.Black)
 
 	// メッセージを描画
 	for _, v := range displayMessages {

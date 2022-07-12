@@ -8,13 +8,23 @@ type CharacterStatusInterface interface {
 	LevelUp(exp int) (bool, CharacterStatusInterface)
 	Update() CharacterStatusInterface
 	InvertTurn() CharacterStatusInterface
+	SetTurn(boolean bool) CharacterStatusInterface
 	FinishTurn() CharacterStatusInterface
 	Lv() int
 	Hp() int
 	MaxHp() int
 	NextExp() int
 	Turn() bool
+	Name() string
+	ActiveBar() float64
 	GetDamageAmount(CharacterStatusInterface) float64
+	StopTimer() bool
+	Dead() bool
+	Appearing() bool
+	AddCondition(cond condition) CharacterStatusInterface
+	CanTurnOn() bool
+
+	SetInitialStatus() CharacterStatusInterface
 
 	// private method
 	// initialStatus()
