@@ -21,17 +21,19 @@ func setInitialCharacter() {
 	playerDrawSlice = playerDrawSlice[:1]
 
 	enmy = enemyStatusSlice[0]
-	enemyStatusSlice = enemyStatusSlice[:1]
+	enemyStatusSlice = enemyStatusSlice[1:]
 	enemyDraw = enemyDrawSlice[0]
-	enemyDrawSlice = enemyDrawSlice[:1]
+	enemyDrawSlice = enemyDrawSlice[1:]
 }
 
 // 次のエネミーをセットする
 func setNextEnemy() {
 	enmy = enemyStatusSlice[0]
-	enemyStatusSlice = enemyStatusSlice[:1]
+	enemyStatusSlice = enemyStatusSlice[1:]
 	enemyDraw = enemyDrawSlice[0]
-	enemyDrawSlice = enemyDrawSlice[:1]
+	enemyDrawSlice = enemyDrawSlice[1:]
+	fmt.Printf("new enemy name: %s\n", enmy.Name())
+	fmt.Printf("new enemy Lv: %d\n", enmy.Lv())
 }
 
 // キャラクターの配列を初期化する
@@ -69,10 +71,6 @@ func setEnemySlice(t character.CharacterType, lv int) {
 func setInitialEnemySlice(t character.CharacterType, lv int) {
 	status := characterStatusMap[t].New(lv)
 	draw := characterDrawMap[t].New()
-
-	fmt.Printf("enemyName: %s\n", status.Name())
-	if draw.CanExecuteInvertAtBase() {
-	}
 
 	enemyStatusSlice = append(enemyStatusSlice, status)
 	enemyDrawSlice = append(enemyDrawSlice, draw)

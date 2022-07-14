@@ -8,9 +8,13 @@ type CharacterDrawInterface interface {
 	InvertDirection() CharacterDrawInterface
 	CanExecuteInvertAtTop() bool
 	CanExecuteInvertAtBase() bool
+	CanFinishAppearing() bool
+	IsReturningToBase() bool
+	IsShowBlinking() bool
 	FinishTurn() CharacterDrawInterface
 	IsFinishDeadBlinking() bool
 	IsFinishAppearing() bool
+	IsBlinking() bool
 	SetInitialDraw() CharacterDrawInterface
 	PositionX() float64
 	PositionY() float64

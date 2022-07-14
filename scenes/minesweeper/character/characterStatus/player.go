@@ -79,6 +79,12 @@ func (p Player) AddCondition(cond condition) CharacterStatusInterface {
 	return new
 }
 
+func (p Player) ResetCondition() CharacterStatusInterface {
+	new := p
+	new.conditions = []condition{}
+	return new
+}
+
 func (p Player) SetInitialStatus() CharacterStatusInterface {
 	new := p.AddCondition(Appearing)
 	return new
@@ -94,6 +100,9 @@ func (p Player) reduceHp(damage float64) CharacterStatusInterface {
 	new := p
 
 	new.hp = math.Max(0, p.hp-damage)
+	if new.hp == 0 {
+		new.AddCondition(Dead)
+	}
 	return new
 }
 

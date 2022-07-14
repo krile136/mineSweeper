@@ -22,6 +22,14 @@ func (p Player) CanExecuteInvertAtBase() bool {
 	return p.difference <= 0
 }
 
+func (p Player) CanFinishAppearing() bool {
+	return p.difference >= 0
+}
+
+func (p Player) IsReturningToBase() bool {
+	return p.direction < 0
+}
+
 func (p Player) UpdateBlinking() CharacterDrawInterface {
 	new := p
 	new.blinkingTick += 1

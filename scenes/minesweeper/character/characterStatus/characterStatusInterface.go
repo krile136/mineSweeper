@@ -23,6 +23,7 @@ type CharacterStatusInterface interface {
 	Appearing() bool
 	AddCondition(cond condition) CharacterStatusInterface
 	CanTurnOn() bool
+	ResetCondition() CharacterStatusInterface
 
 	SetInitialStatus() CharacterStatusInterface
 

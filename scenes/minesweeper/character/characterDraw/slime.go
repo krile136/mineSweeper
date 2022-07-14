@@ -22,6 +22,14 @@ func (s Slime) CanExecuteInvertAtBase() bool {
 	return s.difference >= 0
 }
 
+func (s Slime) CanFinishAppearing() bool {
+	return s.difference <= 0
+}
+
+func (s Slime) IsReturningToBase() bool {
+	return s.direction < 0
+}
+
 func (s Slime) UpdateBlinking() CharacterDrawInterface {
 	new := s
 	new.blinkingTick += 1

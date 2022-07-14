@@ -50,9 +50,6 @@ var (
 	// messages []message
 	displayMessages []messages.MessageInterface
 
-	player status
-	enemy  status
-
 	ply  characterStatus.CharacterStatusInterface
 	enmy characterStatus.CharacterStatusInterface
 

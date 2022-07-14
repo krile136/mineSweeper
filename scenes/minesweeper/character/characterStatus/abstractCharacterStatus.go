@@ -123,7 +123,6 @@ func (a *abstractCharacterStatus) addExp(exp int) (
 		}
 		lv += 1
 		maxHp += a.hpRate
-		fmt.Printf("maxHp: %d\n", int(maxHp))
 		hp = maxHp
 		attack += a.attackRate
 		defense += a.defenseRate

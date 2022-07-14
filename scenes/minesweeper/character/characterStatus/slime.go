@@ -11,6 +11,13 @@ type Slime struct {
 // コンストラクタ
 func (s Slime) New(lv int) (new CharacterStatusInterface) {
 	ac := s.makeAbstractCharacterStatus(s.defaultField())
+	for i := 1; i < lv; i++ {
+		ac.maxHp += ac.hpRate
+		ac.attack += ac.attackRate
+		ac.defense += ac.defenseRate
+	}
+	ac.lv = lv
+	ac.hp = ac.maxHp
 	new = Slime{ac}
 	return
 }
@@ -78,6 +85,12 @@ func (s Slime) AddCondition(cond condition) CharacterStatusInterface {
 	return new
 }
 
+func (s Slime) ResetCondition() CharacterStatusInterface {
+	new := s
+	new.conditions = []condition{}
+	return new
+}
+
 func (s Slime) SetInitialStatus() CharacterStatusInterface {
 	new := s.AddCondition(Appearing)
 	return new
@@ -93,6 +106,9 @@ func (s Slime) reduceHp(damage float64) CharacterStatusInterface {
 	new := s
 
 	new.hp = math.Max(0, s.hp-damage)
+	if new.hp == 0 {
+		new.AddCondition(Dead)
+	}
 	return new
 }
 
