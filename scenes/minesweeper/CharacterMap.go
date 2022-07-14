@@ -15,12 +15,12 @@ var enemyDrawSlice []characterDraw.CharacterDrawInterface
 
 // ゲーム開始直後のキャラクターとエネミーをセットする
 func setInitialCharacter() {
-	ply = playerStatusSlice[0]
+	player = playerStatusSlice[0]
 	playerStatusSlice = playerStatusSlice[:1]
 	playerDraw = playerDrawSlice[0]
 	playerDrawSlice = playerDrawSlice[:1]
 
-	enmy = enemyStatusSlice[0]
+	enemy = enemyStatusSlice[0]
 	enemyStatusSlice = enemyStatusSlice[1:]
 	enemyDraw = enemyDrawSlice[0]
 	enemyDrawSlice = enemyDrawSlice[1:]
@@ -28,12 +28,12 @@ func setInitialCharacter() {
 
 // 次のエネミーをセットする
 func setNextEnemy() {
-	enmy = enemyStatusSlice[0]
+	enemy = enemyStatusSlice[0]
 	enemyStatusSlice = enemyStatusSlice[1:]
 	enemyDraw = enemyDrawSlice[0]
 	enemyDrawSlice = enemyDrawSlice[1:]
-	fmt.Printf("new enemy name: %s\n", enmy.Name())
-	fmt.Printf("new enemy Lv: %d\n", enmy.Lv())
+	fmt.Printf("new enemy name: %s\n", enemy.Name())
+	fmt.Printf("new enemy Lv: %d\n", enemy.Lv())
 }
 
 // キャラクターの配列を初期化する

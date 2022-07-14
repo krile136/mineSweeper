@@ -98,7 +98,7 @@ func (m *MineSweeper) Update() error {
 						m.searchAround(search_x, search_y)
 					}
 					isLevelUp := false
-					isLevelUp, ply = ply.LevelUp(GetExp)
+					isLevelUp, player = player.LevelUp(GetExp)
 					if isLevelUp {
 						messageStruct := MessageMap[message.LevelUp]
 						displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
@@ -124,7 +124,7 @@ func (m *MineSweeper) Update() error {
 					m.searchAround(search_x, search_y)
 				}
 				isLevelUp := false
-				isLevelUp, ply = ply.LevelUp(GetExp)
+				isLevelUp, player = player.LevelUp(GetExp)
 				if isLevelUp {
 					messageStruct := MessageMap[message.LevelUp]
 					displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
@@ -141,35 +141,35 @@ func (m *MineSweeper) Update() error {
 	// 攻撃タイミング処理
 	// タイマーを進めて、Speedと同じになった攻撃ターン
 	// どちらかの攻撃ターンになったときは、攻撃が完了するまで相手のタイマーは止まる
-	if !ply.Turn() && !enmy.Turn() {
-		ply = ply.Update()
-		enmy = enmy.Update()
+	if !player.Turn() && !enemy.Turn() {
+		player = player.Update()
+		enemy = enemy.Update()
 	}
 
-	if enmy.Turn() {
+	if enemy.Turn() {
 		enemyDraw = enemyDraw.ExecuteMoving()
 		if enemyDraw.CanExecuteInvertAtTop() {
 			enemyDraw = enemyDraw.InvertDirection()
-			damage := enmy.GetDamageAmount(ply)
-			ply = enmy.AttackTo(ply)
+			damage := enemy.GetDamageAmount(player)
+			player = enemy.AttackTo(player)
 			messageStruct := MessageMap[message.PlayerDamage]
 			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
 			displayMessages = append(displayMessages, messageStruct.New(value))
 		}
 		if enemyDraw.CanExecuteInvertAtBase() {
 			enemyDraw = enemyDraw.FinishTurn()
-			enmy = enmy.FinishTurn()
+			enemy = enemy.FinishTurn()
 		}
 
 	}
 
-	if ply.Turn() {
+	if player.Turn() {
 		// タイマーが止まるときの専用処理
-		if enmy.StopTimer() {
+		if enemy.StopTimer() {
 			if playerDraw.IsReturningToBase() {
 				playerDraw = playerDraw.ExecuteMoving()
 			} else {
-				ply = ply.FinishTurn()
+				player = player.FinishTurn()
 				playerDraw = playerDraw.FinishTurn()
 			}
 		} else {
@@ -178,42 +178,42 @@ func (m *MineSweeper) Update() error {
 
 		if playerDraw.CanExecuteInvertAtTop() {
 			playerDraw = playerDraw.InvertDirection()
-			damage := ply.GetDamageAmount(enmy)
-			enmy = ply.AttackTo(enmy)
+			damage := player.GetDamageAmount(enemy)
+			enemy = player.AttackTo(enemy)
 			messageStruct := MessageMap[message.EnemyDamage]
 			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
 			displayMessages = append(displayMessages, messageStruct.New(value))
 		}
 		if playerDraw.CanExecuteInvertAtBase() {
-			ply = ply.FinishTurn()
+			player = player.FinishTurn()
 			playerDraw = playerDraw.FinishTurn()
-			if enmy.StopTimer() {
+			if enemy.StopTimer() {
 				// タイマーストップ状態ではプレイヤーのターン継続する（敵が現れたらターン終了）
-				ply = ply.InvertTurn()
+				player = player.InvertTurn()
 			}
 		}
 
-		if enmy.Dead() {
+		if enemy.Dead() {
 			enemyDraw = enemyDraw.UpdateBlinking()
 			if enemyDraw.IsFinishDeadBlinking() {
 				setNextEnemy()
 			}
 		}
-		if enmy.Appearing() {
+		if enemy.Appearing() {
 			enemyDraw.ExecuteMoving()
 			if enemyDraw.CanFinishAppearing() {
-				enmy = enmy.ResetCondition()
-				enmy = enmy.FinishTurn()
-				ply = ply.InvertTurn()
+				enemy = enemy.ResetCondition()
+				enemy = enemy.FinishTurn()
+				player = player.InvertTurn()
 			}
 		}
 	}
 
-	if ply.CanTurnOn() {
-		ply = ply.SetTurn(true)
+	if player.CanTurnOn() {
+		player = player.SetTurn(true)
 	}
-	if enmy.CanTurnOn() && !ply.Turn() {
-		enmy = enmy.SetTurn(true)
+	if enemy.CanTurnOn() && !player.Turn() {
+		enemy = enemy.SetTurn(true)
 	}
 
 	// メッセージの更新処理

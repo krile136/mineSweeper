@@ -50,8 +50,8 @@ var (
 	// messages []message
 	displayMessages []messages.MessageInterface
 
-	ply  characterStatus.CharacterStatusInterface
-	enmy characterStatus.CharacterStatusInterface
+	player characterStatus.CharacterStatusInterface
+	enemy  characterStatus.CharacterStatusInterface
 
 	playerDraw characterDraw.CharacterDrawInterface
 	enemyDraw  characterDraw.CharacterDrawInterface
