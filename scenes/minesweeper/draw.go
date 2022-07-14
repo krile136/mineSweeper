@@ -2,7 +2,6 @@ package minesweeper
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/krile136/mineSweeper/internal/draw"
@@ -63,7 +62,6 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	// キャラクターを描画
 	draw.DrawWithoutRect(screen, player.Name(), 1, playerDraw.CurrentPosition(), playerDraw.PositionY(), 0)
 	if enemy.Dead() {
-		log.Printf("enemy is dead")
 		if enemyDraw.IsShowBlinking() {
 			draw.DrawWithoutRect(screen, enemy.Name(), 1, enemyDraw.CurrentPosition(), enemyDraw.PositionY(), 0)
 		}

@@ -1,8 +1,6 @@
 package minesweeper
 
 import (
-	"fmt"
-
 	"github.com/krile136/mineSweeper/scenes/minesweeper/character"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterDraw"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterStatus"
@@ -32,8 +30,6 @@ func setNextEnemy() {
 	enemyStatusSlice = enemyStatusSlice[1:]
 	enemyDraw = enemyDrawSlice[0]
 	enemyDrawSlice = enemyDrawSlice[1:]
-	fmt.Printf("new enemy name: %s\n", enemy.Name())
-	fmt.Printf("new enemy Lv: %d\n", enemy.Lv())
 }
 
 // キャラクターの配列を初期化する
