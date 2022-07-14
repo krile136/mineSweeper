@@ -1,7 +1,6 @@
 package minesweeper
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"strconv"
@@ -36,14 +35,15 @@ func (m *MineSweeper) Update() error {
 		// ブロックの大きさは、setWIndowの幅 / Layoutの幅に拡大される
 		maxScrollX = math.Max(0, (32*float64(store.Data.MineSweeper.Columns))-float64(store.Data.Layout.OutsideWidth))
 		maxScrollY = math.Max(0, (32*float64(store.Data.MineSweeper.Rows)+float64(store.Data.Layout.BattleField))-float64(store.Data.Layout.OutsideHeight))
-		log.Println(fmt.Sprintf("maxScrollX: %g", maxScrollX))
 
 		// ゲームに関するデータを初期化する
-		// messages = []message{}
 		displayMessages = []messages.MessageInterface{}
-		player = Player.getInitialPlayerStatus()
-		enemy = Slime.enemyFactory(1)
 
+		// 各キャラクターの初期ステータスなどが入った配列を初期化する
+		initCharacterSlice()
+
+		// playerとenemyに初期値をセットする
+		setInitialCharacter()
 	} else {
 		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 			m.placeBombs()
@@ -97,22 +97,11 @@ func (m *MineSweeper) Update() error {
 						search_x := nextCheck[0] % m.rows
 						m.searchAround(search_x, search_y)
 					}
-					isLevelUp, _, _ := player.levelUp(GetExp)
+					isLevelUp := false
+					isLevelUp, player = player.LevelUp(GetExp)
 					if isLevelUp {
 						messageStruct := MessageMap[message.LevelUp]
 						displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
-						// levelUpDefaultX, levelUpDefaultY := LevelUp.getDefaultPosition()
-						// newMessage := message{
-						// 	value:      "Level UP !!",
-						// 	messageDiv: LevelUp,
-						// 	x:          levelUpDefaultX,
-						// 	y:          levelUpDefaultY,
-						// 	tick:       0,
-						// 	crl:        store.Data.Color.Orange,
-						// }
-						// messages = append(messages, newMessage)
-
-						// displayMessages = append(displayMessages,))
 					}
 				}
 			}
@@ -134,7 +123,8 @@ func (m *MineSweeper) Update() error {
 
 					m.searchAround(search_x, search_y)
 				}
-				isLevelUp, _, _ := player.levelUp(GetExp)
+				isLevelUp := false
+				isLevelUp, player = player.LevelUp(GetExp)
 				if isLevelUp {
 					messageStruct := MessageMap[message.LevelUp]
 					displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
@@ -151,94 +141,80 @@ func (m *MineSweeper) Update() error {
 	// 攻撃タイミング処理
 	// タイマーを進めて、Speedと同じになった攻撃ターン
 	// どちらかの攻撃ターンになったときは、攻撃が完了するまで相手のタイマーは止まる
-	if !player.turn && !enemy.turn {
-		player.tick += 1
-		enemy.tick += 1
+	if !player.Turn() && !enemy.Turn() {
+		player = player.Update()
+		enemy = enemy.Update()
 	}
 
-	if enemy.turn {
-		enemy.executeMoving()
-		if math.Abs(float64(enemy.diff)) >= 50 {
-			enemy.invertMove()
-			damage := enemy.attackTo(&player)
-			// newMessage := message{
-			// 	value:      strconv.FormatFloat(damage, 'f', 0, 64),
-			// 	messageDiv: PlayerDamage,
-			// 	x:          defaultPositionX,
-			// 	y:          defaultPositionY,
-			// 	tick:       0,
-			// 	crl:        store.Data.Color.Red,
-			// }
-			// messages = append(messages, newMessage)
+	if enemy.Turn() {
+		enemyDraw = enemyDraw.ExecuteMoving()
+		if enemyDraw.CanExecuteInvertAtTop() {
+			enemyDraw = enemyDraw.InvertDirection()
+			damage := enemy.GetDamageAmount(player)
+			player = enemy.AttackTo(player)
 			messageStruct := MessageMap[message.PlayerDamage]
 			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
 			displayMessages = append(displayMessages, messageStruct.New(value))
+		}
+		if enemyDraw.CanExecuteInvertAtBase() {
+			enemyDraw = enemyDraw.FinishTurn()
+			enemy = enemy.FinishTurn()
+		}
 
-		}
-		if enemy.diff > 0 {
-			enemy.invertMove()
-			enemy.reset()
-			enemy.turn = false
-		}
 	}
 
-	if player.turn {
-		if !enemy.destroyed && !enemy.isAppearing {
-			player.executeMoving()
-		} else {
-			if player.move < 0 {
-				player.executeMoving()
+	if player.Turn() {
+		// タイマーが止まるときの専用処理
+		if enemy.StopTimer() {
+			if playerDraw.IsReturningToBase() {
+				playerDraw = playerDraw.ExecuteMoving()
 			} else {
-				player.reset()
+				player = player.FinishTurn()
+				playerDraw = playerDraw.FinishTurn()
 			}
+		} else {
+			playerDraw = playerDraw.ExecuteMoving()
 		}
-		if math.Abs(float64(player.diff)) > 50 {
-			player.invertMove()
-			damage := player.attackTo(&enemy)
+
+		if playerDraw.CanExecuteInvertAtTop() {
+			playerDraw = playerDraw.InvertDirection()
+			damage := player.GetDamageAmount(enemy)
+			enemy = player.AttackTo(enemy)
 			messageStruct := MessageMap[message.EnemyDamage]
 			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
 			displayMessages = append(displayMessages, messageStruct.New(value))
 		}
-		if player.diff <= 0 {
-			player.invertMove()
-			player.reset()
-			if !enemy.destroyed && !enemy.isAppearing {
-				player.turn = false
+		if playerDraw.CanExecuteInvertAtBase() {
+			player = player.FinishTurn()
+			playerDraw = playerDraw.FinishTurn()
+			if enemy.StopTimer() {
+				// タイマーストップ状態ではプレイヤーのターン継続する（敵が現れたらターン終了）
+				player = player.InvertTurn()
 			}
 		}
-		if enemy.destroyed {
-			enemy.blinkingTick += 1
-			if enemy.blinkingTick >= DestroyBlinkingMaxTick {
-				// 新しいモンスターを出現させる
-				lv := enemy.lv
-				enemy = Slime.enemyFactory(float64(lv + 1))
-				enemy.diff = 150
-				enemy.move = -1
-				enemy.isAppearing = true
+
+		if enemy.Dead() {
+			enemyDraw = enemyDraw.UpdateBlinking()
+			if enemyDraw.IsFinishDeadBlinking() {
+				setNextEnemy()
 			}
 		}
-		if enemy.isAppearing {
-			enemy.executeMoving()
-			if enemy.diff < 0 {
-				enemy.diff = 0
-				enemy.isAppearing = false
-				player.turn = false
+		if enemy.Appearing() {
+			enemyDraw.ExecuteMoving()
+			if enemyDraw.CanFinishAppearing() {
+				enemy = enemy.ResetCondition()
+				enemy = enemy.FinishTurn()
+				player = player.InvertTurn()
 			}
 		}
 	}
 
-	if player.tick >= player.speed {
-		player.turn = true
+	if player.CanTurnOn() {
+		player = player.SetTurn(true)
 	}
-	if enemy.tick >= enemy.speed && !player.turn {
-		enemy.turn = true
+	if enemy.CanTurnOn() && !player.Turn() {
+		enemy = enemy.SetTurn(true)
 	}
-
-	player.updateActiveBar()
-	enemy.updateActiveBar()
-
-	// log.Println(fmt.Sprintf("PlayerTick: %d,    EnemyTick: %d", PlayerTick, EnemyTick))
-	// log.Println(fmt.Sprintf("PlayerActiveBar: %g", PlayerActiveBar))
 
 	// メッセージの更新処理
 	tempMessages := []messages.MessageInterface{}
@@ -247,8 +223,6 @@ func (m *MineSweeper) Update() error {
 		if newMessage.IsExist() {
 			tempMessages = append(tempMessages, newMessage)
 		}
-		// fmt.Printf("messageDiv: %s, value: %s,  exist: %d \n", message.messageDiv.String(), message.value, message.messageDiv.getExistTick()-message.tick)
-		// fmt.Printf("mx: %d,  my; %d \n", int(message.x), int(message.y))
 	}
 	displayMessages = tempMessages
 

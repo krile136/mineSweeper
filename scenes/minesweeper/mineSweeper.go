@@ -2,6 +2,8 @@ package minesweeper
 
 import (
 	"github.com/krile136/mineSweeper/enum/route"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterDraw"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterStatus"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
 )
 
@@ -48,8 +50,11 @@ var (
 	// messages []message
 	displayMessages []messages.MessageInterface
 
-	player status
-	enemy  status
+	player characterStatus.CharacterStatusInterface
+	enemy  characterStatus.CharacterStatusInterface
+
+	playerDraw characterDraw.CharacterDrawInterface
+	enemyDraw  characterDraw.CharacterDrawInterface
 
 	GetExp int
 )
