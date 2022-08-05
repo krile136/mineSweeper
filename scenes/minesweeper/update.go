@@ -7,6 +7,8 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/explode"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/explode/view"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
 	"github.com/krile136/mineSweeper/scenes/scene"
@@ -25,6 +27,9 @@ func (m *MineSweeper) Update() error {
 		for i := 0; i < m.columns; i++ {
 			m.field[i] = make([]int, m.columns)
 		}
+
+		created_explodes := explode.Create()
+		explodes = append(explodes, created_explodes...)
 
 		// 爆弾を配置する
 		m.placeBombs()
@@ -225,6 +230,14 @@ func (m *MineSweeper) Update() error {
 		}
 	}
 	displayMessages = tempMessages
+
+	// 爆発の更新処理
+	tmpExplodes := []view.ExplodeViewInterface{}
+	for _, explode := range explodes {
+		newExplode := explode.Update()
+		tmpExplodes = append(tmpExplodes, newExplode)
+	}
+	explodes = tmpExplodes
 
 	return nil
 }
