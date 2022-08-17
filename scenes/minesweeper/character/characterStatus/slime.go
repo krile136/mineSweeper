@@ -26,7 +26,7 @@ func (s Slime) New(lv int) (new CharacterStatusInterface) {
 func (s Slime) AttackTo(target CharacterStatusInterface) CharacterStatusInterface {
 	damage := s.calcDamage(s.attack, target.getDefense())
 
-	newTarget := target.reduceHp(damage)
+	newTarget := target.ReduceHp(damage)
 	return newTarget
 }
 
@@ -102,7 +102,7 @@ func (s Slime) getDefense() float64 {
 }
 
 // HPを減少させる
-func (s Slime) reduceHp(damage float64) CharacterStatusInterface {
+func (s Slime) ReduceHp(damage float64) CharacterStatusInterface {
 	new := s
 
 	new.hp = math.Max(0, s.hp-damage)

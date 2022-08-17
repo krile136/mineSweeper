@@ -75,7 +75,7 @@ func LoadImages() error {
 		return err
 	}
 
-	// ディレクトリの中身を取り出し、pngでなければ画像として登録
+	// ディレクトリの中身を取り出し、pngなら画像として登録
 	for _, ent := range ents {
 		name := ent.Name()
 

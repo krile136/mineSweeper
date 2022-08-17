@@ -1,12 +1,12 @@
 package minesweeper
 
 import (
-	"log"
 	"math"
 	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/explode"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
 	"github.com/krile136/mineSweeper/scenes/scene"
@@ -25,6 +25,8 @@ func (m *MineSweeper) Update() error {
 		for i := 0; i < m.columns; i++ {
 			m.field[i] = make([]int, m.columns)
 		}
+
+		explodes = explode.Create()
 
 		// 爆弾を配置する
 		m.placeBombs()
@@ -86,9 +88,9 @@ func (m *MineSweeper) Update() error {
 			if m.field[y][x] != flag {
 				position := y*m.rows + x
 				if inArray(m.bombsPosition, position) {
-					// 爆弾があるのでゲームオーバー
-					log.Print("game over! (left click)")
+					// 爆弾があるのでダメージ
 					m.field[y][x] = bomb
+					addExplodes()
 				} else {
 					GetExp = 0
 					m.searchAround(x, y)
@@ -225,6 +227,17 @@ func (m *MineSweeper) Update() error {
 		}
 	}
 	displayMessages = tempMessages
+
+	// 爆発の更新処理
+	var finishedExplodes int = 0
+	explodes, finishedExplodes = explodes.Update()
+	for i := 0; i < finishedExplodes; i++ {
+		explodeDamage := float64(player.MaxHp()) * 0.02
+		messageStruct := MessageMap[message.PlayerDamage]
+		var value string = strconv.FormatFloat(explodeDamage, 'f', 0, 64)
+		displayMessages = append(displayMessages, messageStruct.New(value))
+		player = player.ReduceHp(explodeDamage)
+	}
 
 	return nil
 }

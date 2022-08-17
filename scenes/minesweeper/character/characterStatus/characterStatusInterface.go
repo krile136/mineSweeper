@@ -24,6 +24,7 @@ type CharacterStatusInterface interface {
 	AddCondition(cond condition) CharacterStatusInterface
 	CanTurnOn() bool
 	ResetCondition() CharacterStatusInterface
+	ReduceHp(damage float64) CharacterStatusInterface
 
 	SetInitialStatus() CharacterStatusInterface
 
@@ -33,5 +34,4 @@ type CharacterStatusInterface interface {
 	calcDamage(currentAttack, targetDefense float64) (damage float64)
 	calcNextExp(lv int) (next int)
 	getDefense() float64
-	reduceHp(damage float64) CharacterStatusInterface
 }
