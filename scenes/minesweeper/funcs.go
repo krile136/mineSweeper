@@ -4,6 +4,8 @@ import (
 	"log"
 	"math"
 	"math/rand"
+
+	"github.com/krile136/mineSweeper/scenes/minesweeper/explode"
 )
 
 func (m *MineSweeper) placeBombs() error {
@@ -90,6 +92,14 @@ func (m *MineSweeper) searchAroundOnNumberField(x, y int) {
 		}
 	}
 	nextCheck = append(nextCheck, next...)
+}
+
+func addExplodes() {
+	for i := 0; i < 5; i++ {
+		rdmX := rand.Float64()*20 - 10
+		rdmY := rand.Float64()*20 - 10
+		explodes = explodes.Add(explode.Orange, 115+rdmX, 45+rdmY, -10*i)
+	}
 }
 
 // int型の配列の中に特定のint型の値が含まれるかチェックする

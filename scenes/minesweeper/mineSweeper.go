@@ -4,7 +4,7 @@ import (
 	"github.com/krile136/mineSweeper/enum/route"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterDraw"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/character/characterStatus"
-	"github.com/krile136/mineSweeper/scenes/minesweeper/explode/view"
+	"github.com/krile136/mineSweeper/scenes/minesweeper/explode"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
 )
 
@@ -51,7 +51,7 @@ var (
 	// messages []message
 	displayMessages []messages.MessageInterface
 
-	explodes []view.ExplodeViewInterface
+	explodes explode.ExplodeCollection
 
 	player characterStatus.CharacterStatusInterface
 	enemy  characterStatus.CharacterStatusInterface

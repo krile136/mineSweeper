@@ -20,7 +20,7 @@ func (p Player) New(lv int) (new CharacterStatusInterface) {
 func (p Player) AttackTo(target CharacterStatusInterface) CharacterStatusInterface {
 	damage := p.calcDamage(p.attack, target.getDefense())
 
-	newTarget := target.reduceHp(damage)
+	newTarget := target.ReduceHp(damage)
 	return newTarget
 }
 
@@ -96,7 +96,7 @@ func (p Player) getDefense() float64 {
 }
 
 // HPを減少させる
-func (p Player) reduceHp(damage float64) CharacterStatusInterface {
+func (p Player) ReduceHp(damage float64) CharacterStatusInterface {
 	new := p
 
 	new.hp = math.Max(0, p.hp-damage)

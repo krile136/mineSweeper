@@ -16,6 +16,7 @@ type abstractExplodeView struct {
 	pictureY int
 }
 
+// 画像を表示させる
 func (o Orange) Draw(screen *ebiten.Image) {
 	if o.tick > 0 {
 		pictureX := o.CalcSheetsNumber()
@@ -23,24 +24,27 @@ func (o Orange) Draw(screen *ebiten.Image) {
 	}
 }
 
+// 画像ファイルの何番目の画像かを計算する
 func (a *abstractExplodeView) CalcSheetsNumber() int {
 	i := (a.tick / a.interval) % a.sheets
 	return a.width * i
 }
 
-func (a *abstractExplodeView) IsFinish() bool {
-	return a.tick > a.interval*a.sheets
+// 一通りの描画が終わっていないかチェックする
+func (a *abstractExplodeView) IsNotFinish() bool {
+	return a.tick < a.interval*a.sheets
 }
 
 func (a *abstractExplodeView) makeAbstractExplodeView(
 	x float64,
 	y float64,
 	pictureY int,
+	tick int,
 ) (ae *abstractExplodeView) {
 	ae = &abstractExplodeView{
 		x:        x,
 		y:        y,
-		tick:     0,
+		tick:     tick,
 		sheets:   6,
 		interval: 5,
 		filename: "bomb",
