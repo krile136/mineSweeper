@@ -2,11 +2,12 @@ package store
 
 import (
 	"image/color"
+	"log"
 
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 
-	fonts "github.com/krile136/internal/assets/fonts"
+	fonts "github.com/krile136/mineSweeper/internal/assets/fonts"
 )
 
 // シーン間共通変数を定義する
@@ -29,21 +30,12 @@ func (s *Store) Init() error {
 	Data.Layout.OutsideHeight = 320
 	Data.Layout.BattleField = 75
 
-	// tempScrollCorrectiveValue, err := strconv.Atoi(os.Getenv("SCROLL_CORRECTION_VALUE"))
-	// if err != nil {
-	// 	return err
-	// }
 	tempScrollCorrectiveValue := 1
 	Data.Env.ScrollCorrectionValue = tempScrollCorrectiveValue
 
 	Data.MineSweeper.Rows = 20
 	Data.MineSweeper.Columns = 20
 	Data.MineSweeper.BombsNumber = 50
-
-	// Data.Font.Large, Data.Font.Middle, Data.Font.Small, err = loadFont()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 
 	Data.Font.Large, Data.Font.Middle, Data.Font.Small, _ = loadFont()
 
@@ -96,35 +88,20 @@ type Color struct {
 }
 
 func loadFont() (font.Face, font.Face, font.Face, error) {
-	// fontデータを開くディレクトリパス
-	// 現状、main.goからの相対パス
-	// currentDir, err := os.Getwd()
-	// log.Printf("currentDir: %s", currentDir)
-	// if err != nil {
-	// 	return nil, nil, nil, err
-	// }
-	// fontDir := currentDir + "/internal/assets/font/"
-	// const fontName = "PixelMplus10-Regular.ttf"
-
-	// ftBinary, err := os.ReadFile(fontDir + fontName)
-	// if err != nil {
-	// 	return nil, nil, nil, err
-	// }
-
-	// tt, err := opentype.Parse(ftBinary)
-	// tt, err := opentype.Parse(font.PixelMplus10Regular_ttf)
-	tt, err := opentype.Parse(fonts.PixelMplus10Regular_ttf)
+	// バイナリデータを直接渡す
+	fontData := fonts.CompressedTTF
+	tt, err := opentype.Parse(fontData)
 	if err != nil {
+		log.Printf("failed to load font Data: %s", err.Error())
 		return nil, nil, nil, err
 	}
-	const dpi = 72
-
 	fontLarge, err := opentype.NewFace(tt, &opentype.FaceOptions{
 		Size:    24,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	})
 	if err != nil {
+		log.Printf("failed to open large font face : %s", err.Error())
 		return nil, nil, nil, err
 	}
 
@@ -134,6 +111,7 @@ func loadFont() (font.Face, font.Face, font.Face, error) {
 		Hinting: font.HintingFull,
 	})
 	if err != nil {
+		log.Printf("failed to open middle font face : %s", err.Error())
 		return nil, nil, nil, err
 	}
 
@@ -143,6 +121,7 @@ func loadFont() (font.Face, font.Face, font.Face, error) {
 		Hinting: font.HintingFull,
 	})
 	if err != nil {
+		log.Printf("failed to open small font face : %s", err.Error())
 		return nil, nil, nil, err
 	}
 
