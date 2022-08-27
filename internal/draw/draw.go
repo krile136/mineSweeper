@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	_ "image/png"
+	"log"
 	"math"
 	"path"
 	"path/filepath"
@@ -70,14 +71,15 @@ func LoadImages() error {
 	const dir = "images"
 
 	// ディレクトリの内容を読み取る
-	ents, err := assets.Assets.ReadDir(dir)
+	files, err := assets.Assets.ReadDir(dir)
 	if err != nil {
+		log.Printf("failed to load images directory: %s", err.Error())
 		return err
 	}
 
 	// ディレクトリの中身を取り出し、pngなら画像として登録
-	for _, ent := range ents {
-		name := ent.Name()
+	for _, file := range files {
+		name := file.Name()
 
 		// 拡張子(png)のチェック
 		ext := filepath.Ext(name)
@@ -88,12 +90,14 @@ func LoadImages() error {
 		// 画像を読み込む
 		f, err := assets.Assets.Open(path.Join(dir, name))
 		if err != nil {
+			log.Printf("failed to open image : %s", err.Error())
 			return err
 		}
 		defer f.Close()
 
 		img, _, err := image.Decode(f)
 		if err != nil {
+			log.Printf("failed to decode image : %s", err.Error())
 			return err
 		}
 
