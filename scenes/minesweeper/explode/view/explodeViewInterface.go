@@ -3,7 +3,7 @@ package view
 import "github.com/hajimehoshi/ebiten/v2"
 
 type ExplodeViewInterface interface {
-	New(x, y float64, tick int) (new ExplodeViewInterface)
+	New(x, y float64, tick int, delay int) (new ExplodeViewInterface)
 	Update() ExplodeViewInterface
 	Draw(screen *ebiten.Image)
 	CalcSheetsNumber() int
@@ -14,5 +14,6 @@ type ExplodeViewInterface interface {
 		y float64,
 		pictureY int,
 		tick int,
+		delay int,
 	) (ae *abstractExplodeView)
 }

@@ -26,9 +26,9 @@ type Store struct {
 
 // シーン間共通変数の初期化
 func (s *Store) Init() error {
-	Data.Layout.OutsideWidth = 320
-	Data.Layout.OutsideHeight = 320
-	Data.Layout.BattleField = 75
+	Data.Layout.OutsideWidth = 640
+	Data.Layout.OutsideHeight = 480
+	Data.Layout.BattleField = 100 
 
 	tempScrollCorrectiveValue := 1
 	Data.Env.ScrollCorrectionValue = tempScrollCorrectiveValue

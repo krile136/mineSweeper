@@ -19,9 +19,9 @@ type ExplodeCollection struct {
 	collection []view.ExplodeViewInterface
 }
 
-func (e ExplodeCollection) Add(eType ExplodeType, x, y float64, tick int) ExplodeCollection {
+func (e ExplodeCollection) Add(eType ExplodeType, x, y float64, tick int, delay int) ExplodeCollection {
 	newSlice := e.collection
-	explode := ExplodeMap[eType].New(x, y, tick)
+	explode := ExplodeMap[eType].New(x, y, tick, delay)
 	newSlice = append(newSlice, explode)
 	new := ExplodeCollection{newSlice}
 	return new

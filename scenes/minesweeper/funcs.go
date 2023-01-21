@@ -1,7 +1,6 @@
 package minesweeper
 
 import (
-	"log"
 	"math"
 	"math/rand"
 
@@ -71,6 +70,8 @@ func (m *MineSweeper) searchAround(x, y int) {
 
 // 周りの爆弾の数が表示されているフィールドにて、周囲のフィールドを走査する
 func (m *MineSweeper) searchAroundOnNumberField(x, y int) {
+	var bombs int = 0
+	var bomb_interval int = 5
 	var next []int
 	for i := y - 1; i <= y+1; i++ {
 		for j := x - 1; j <= x+1; j++ {
@@ -78,10 +79,11 @@ func (m *MineSweeper) searchAroundOnNumberField(x, y int) {
 				position := i*m.rows + j
 				if inArray(m.bombsPosition, position) {
 					// 周りのマスを開いたときに爆弾があった場合
-					if m.field[i][j] != flag {
-						// フラグおいてないのでゲームーオーバー
+					if m.field[i][j] != flag && m.field[i][j] != bomb {
+						// フラグおいてないので爆発ダメージ
 						m.field[i][j] = bomb
-						log.Print("game over! (right click)")
+						addExplodes(bombs * bomb_interval)
+						bombs += 1
 					}
 				} else {
 					if m.field[i][j] == close {
@@ -94,11 +96,11 @@ func (m *MineSweeper) searchAroundOnNumberField(x, y int) {
 	nextCheck = append(nextCheck, next...)
 }
 
-func addExplodes() {
+func addExplodes(delay int) {
 	for i := 0; i < 5; i++ {
 		rdmX := rand.Float64()*20 - 10
 		rdmY := rand.Float64()*20 - 10
-		explodes = explodes.Add(explode.Orange, 115+rdmX, 45+rdmY, -10*i)
+		explodes = explodes.Add(explode.Orange, 115+rdmX, 45+rdmY, -10*i, delay)
 	}
 }
 

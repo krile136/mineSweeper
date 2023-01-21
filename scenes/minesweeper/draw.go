@@ -54,19 +54,47 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	}
 
 	// BattleFiledを表示
-	bf_x := 640
+	bf_x := store.Data.Layout.OutsideWidth
 	sliceOffsetX := (bf_x - store.Data.Layout.OutsideWidth) / 2
-	sliceOffsetY := 50
-	draw.Draw(screen, "pipo-battlebg001", 1, 0.5, float64(store.Data.Layout.OutsideWidth)/2, float64(store.Data.Layout.BattleField)/2, 0, sliceOffsetX, sliceOffsetY, store.Data.Layout.OutsideWidth, store.Data.Layout.BattleField*2)
+	sliceOffsetY := 0
+	draw.Draw(
+		screen,
+		"pipo-battlebg001",
+		1,
+		0.5,
+		float64(store.Data.Layout.OutsideWidth)/2,
+		float64(store.Data.Layout.BattleField)/2,
+		0,
+		sliceOffsetX,
+		sliceOffsetY,
+		store.Data.Layout.OutsideWidth,
+		store.Data.Layout.BattleField*2)
 
 	// キャラクターを描画
-	draw.DrawWithoutRect(screen, player.Name(), 1, playerDraw.CurrentPosition(), playerDraw.PositionY(), 0)
+	draw.DrawWithoutRect(
+		screen, player.Name(),
+		1,
+		playerDraw.CurrentPosition(),
+		playerDraw.PositionY(),
+		0)
+
 	if enemy.Dead() {
 		if enemyDraw.IsShowBlinking() {
-			draw.DrawWithoutRect(screen, enemy.Name(), 1, enemyDraw.CurrentPosition(), enemyDraw.PositionY(), 0)
+			draw.DrawWithoutRect(
+				screen,
+				enemy.Name(),
+				1,
+				enemyDraw.CurrentPosition(),
+				enemyDraw.PositionY(),
+				0)
 		}
 	} else {
-		draw.DrawWithoutRect(screen, enemy.Name(), 1, enemyDraw.CurrentPosition(), enemyDraw.PositionY(), 0)
+		draw.DrawWithoutRect(
+			screen, enemy.Name(),
+			1,
+			enemyDraw.CurrentPosition(),
+			enemyDraw.PositionY(),
+			0)
 	}
 
 	// アクティブバーを描画

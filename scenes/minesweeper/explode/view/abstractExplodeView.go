@@ -9,6 +9,7 @@ type abstractExplodeView struct {
 	x        float64
 	y        float64
 	tick     int
+	delay    int
 	sheets   int
 	interval int
 	filename string
@@ -40,11 +41,13 @@ func (a *abstractExplodeView) makeAbstractExplodeView(
 	y float64,
 	pictureY int,
 	tick int,
+	delay int,
 ) (ae *abstractExplodeView) {
 	ae = &abstractExplodeView{
 		x:        x,
 		y:        y,
 		tick:     tick,
+		delay:    delay,
 		sheets:   6,
 		interval: 5,
 		filename: "bomb",

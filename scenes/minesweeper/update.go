@@ -1,6 +1,7 @@
 package minesweeper
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 
@@ -87,10 +88,11 @@ func (m *MineSweeper) Update() error {
 			// クリックしたマスがフラグが立っていれば何もしない
 			if m.field[y][x] != flag {
 				position := y*m.rows + x
+				fmt.Printf("position: %d\n", position)
 				if inArray(m.bombsPosition, position) {
 					// 爆弾があるのでダメージ
 					m.field[y][x] = bomb
-					addExplodes()
+					addExplodes(0)
 				} else {
 					GetExp = 0
 					m.searchAround(x, y)
