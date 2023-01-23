@@ -14,6 +14,8 @@ type abstractCharacterDraw struct {
 const topDifference float64 = 50
 const DeadBlinkingMaxTick int = 100
 const BlinkingInterval int = 3
+const diffFromCenterToCharacter float64 = 50 
+const characterYAxis float64 = 60
 
 func (a *abstractCharacterDraw) CanExecuteInvertAtTop() bool {
 	return math.Abs(a.difference) >= topDifference
@@ -48,6 +50,18 @@ func (a *abstractCharacterDraw) Difference() float64 {
 func (a *abstractCharacterDraw) CurrentPosition() float64 {
 	return a.positionX + a.difference
 }
+
+func (a *abstractCharacterDraw) getDiffFromCenterToCharacter() float64 {
+	return diffFromCenterToCharacter
+}
+
+
+func (a *abstractCharacterDraw) getCharacterYPosition() float64 {
+	return characterYAxis 
+}
+
+
+
 
 func (a *abstractCharacterDraw) makeAbstractCharacterDraw(positionX, positionY, direction, difference float64) (acd *abstractCharacterDraw) {
 	acd = &abstractCharacterDraw{

@@ -234,7 +234,7 @@ func (m *MineSweeper) Update() error {
 	var finishedExplodes int = 0
 	explodes, finishedExplodes = explodes.Update()
 	for i := 0; i < finishedExplodes; i++ {
-		explodeDamage := float64(player.MaxHp()) * 0.02
+		explodeDamage := float64(player.MaxHp()) * 0.05
 		messageStruct := MessageMap[message.PlayerDamage]
 		var value string = strconv.FormatFloat(explodeDamage, 'f', 0, 64)
 		displayMessages = append(displayMessages, messageStruct.New(value))

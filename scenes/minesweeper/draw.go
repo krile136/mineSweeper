@@ -98,22 +98,28 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	}
 
 	// アクティブバーを描画
-	draw.Draw(screen, "minesweeper", 1.2, 0.2, 110, 70, 0, p*5, 0, p, p)
-	draw.Draw(screen, "minesweeper", 1.2*player.ActiveBar(), 0.2, 110-(1-player.ActiveBar())*float64(p)*0.6, 70, 0, p*7, 0, p, p)
-	draw.Draw(screen, "minesweeper", 1.2, 0.2, 195, 70, 0, p*5, 0, p, p)
-	draw.Draw(screen, "minesweeper", 1.2*enemy.ActiveBar(), 0.2, 195-(1-enemy.ActiveBar())*float64(p)*0.6, 70, 0, p*7, 0, p, p)
+	var center float64 = float64(store.Data.Layout.OutsideWidth) / 2
+	var barFromCenter float64 = 50
+	var barYAxis float64 = 92
+
+	draw.Draw(screen, "minesweeper", 1.2, 0.2, center-barFromCenter, barYAxis, 0, p*5, 0, p, p)
+	draw.Draw(screen, "minesweeper", 1.2*player.ActiveBar(), 0.2, center-barFromCenter-(1-player.ActiveBar())*float64(p)*0.6, barYAxis, 0, p*7, 0, p, p)
+	draw.Draw(screen, "minesweeper", 1.2, 0.2, center+barFromCenter, barYAxis, 0, p*5, 0, p, p)
+	draw.Draw(screen, "minesweeper", 1.2*enemy.ActiveBar(), 0.2, center+barFromCenter-(1-enemy.ActiveBar())*float64(p)*0.6, barYAxis, 0, p*7, 0, p, p)
 
 	// 文字を描画
-	text.DrawText(screen, fmt.Sprintf("Lv %d", player.Lv()), 100, 10, "S", store.Data.Color.Black)
-	text.DrawText(screen, "HP", 5, 20, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d/%d", player.Hp(), player.MaxHp()), 5, 35, "M", store.Data.Color.Black)
-	text.DrawText(screen, "NEXT", 5, 55, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d", player.NextExp()), 5, 70, "M", store.Data.Color.Black)
+	var playerTextFromCenter int = 170
+	text.DrawText(screen, fmt.Sprintf("Lv %d", player.Lv()), int(center)-60, 20, "S", store.Data.Color.Black)
+	text.DrawText(screen, "HP", int(center)-playerTextFromCenter, 30, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d/%d", player.Hp(), player.MaxHp()), int(center)-playerTextFromCenter, 45, "M", store.Data.Color.Black)
+	text.DrawText(screen, "NEXT", int(center)-playerTextFromCenter, 70, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d", player.NextExp()), int(center)-playerTextFromCenter, 85, "M", store.Data.Color.Black)
 
+	var enemyTextFromCenter int = 100
 	HpStringLength := text.Length(fmt.Sprintf(" %d/%d", enemy.Hp(), enemy.MaxHp()), "M")
-	text.DrawText(screen, fmt.Sprintf("Lv %d", enemy.Lv()), 180, 10, "S", store.Data.Color.Black)
-	text.DrawText(screen, "HP", 300, 20, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d/%d", enemy.Hp(), enemy.MaxHp()), 310-HpStringLength, 35, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf("Lv %d", enemy.Lv()), int(center)+40, 20, "S", store.Data.Color.Black)
+	text.DrawText(screen, "HP", int(center)+enemyTextFromCenter, 30, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d/%d", enemy.Hp(), enemy.MaxHp()), int(center)+45+HpStringLength, 45, "M", store.Data.Color.Black)
 
 	// 爆発を描画
 	explodes.Draw(screen)

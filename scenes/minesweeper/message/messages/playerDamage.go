@@ -42,8 +42,8 @@ func (p PlayerDamage) Update() MessageInterface {
 */
 
 func (p PlayerDamage) defaultField() (x, y float64, existTick int, crl color.Color) {
-	x = 100
-	y = 55
+	x = float64(store.Data.Layout.OutsideWidth)/2 - 75
+	y = 60
 	existTick = 40
 	crl = store.Data.Color.Red
 	return

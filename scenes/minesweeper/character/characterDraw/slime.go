@@ -1,5 +1,7 @@
 package characterDraw
 
+import "github.com/krile136/mineSweeper/store"
+
 type Slime struct {
 	*abstractCharacterDraw
 }
@@ -61,8 +63,10 @@ func (s Slime) SetInitialDraw() CharacterDrawInterface {
 
 // デフォルトのフィールド値を取得する
 func (s Slime) defaultField() (positionX, positionY, direction, difference float64) {
-	positionX = 195
-	positionY = 40
+	var center float64 = float64(store.Data.Layout.OutsideWidth) / 2
+	const diffFromCenterToCharacter = 30
+	positionX = center + s.getDiffFromCenterToCharacter()
+	positionY = s.getCharacterYPosition() 
 	direction = -1
 	difference = 0
 	return

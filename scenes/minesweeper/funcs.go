@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/krile136/mineSweeper/scenes/minesweeper/explode"
+	"github.com/krile136/mineSweeper/store"
 )
 
 func (m *MineSweeper) placeBombs() error {
@@ -100,7 +101,9 @@ func addExplodes(delay int) {
 	for i := 0; i < 5; i++ {
 		rdmX := rand.Float64()*20 - 10
 		rdmY := rand.Float64()*20 - 10
-		explodes = explodes.Add(explode.Orange, 115+rdmX, 45+rdmY, -10*i, delay)
+		var baseX float64 = float64(store.Data.Layout.OutsideWidth)/2 - 45 
+		var baseY float64 = float64(60)
+		explodes = explodes.Add(explode.Orange, baseX+rdmX, baseY+rdmY, -10*i, delay)
 	}
 }
 

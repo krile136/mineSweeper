@@ -3,6 +3,7 @@ package messages
 import (
 	"image/color"
 
+	"github.com/krile136/mineSweeper/internal/text"
 	"github.com/krile136/mineSweeper/store"
 )
 
@@ -41,7 +42,8 @@ func (l LevelUp) Update() MessageInterface {
 */
 
 func (l LevelUp) defaultField() (x, y float64, existTick int, crl color.Color) {
-	x = 100
+	var HpStringLength float64 = float64(text.Length(l.String(), "M"))
+	x = float64(store.Data.Layout.OutsideWidth)/2 - HpStringLength/2
 	y = 0
 	existTick = 70
 	crl = store.Data.Color.Orange
