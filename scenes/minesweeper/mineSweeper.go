@@ -35,18 +35,22 @@ const (
 )
 
 var (
-	nums            [9]int = [9]int{zero, one, two, three, four, five, six, seven, eight}
-	nextCheck       []int
-	scrollX         float64
-	scrollY         float64
-	maxScrollX      float64
-	maxScrollY      float64
-	barLengthX      float64
-	barLengthY      float64
-	barSlideX       float64
-	barSlideY       float64
-	isBarDisplay    bool
-	BarDisplayFrame int
+	nums             [9]int = [9]int{zero, one, two, three, four, five, six, seven, eight}
+	nextCheck        []int
+	scrollX          float64
+	scrollY          float64
+	maxScrollX       float64
+	maxScrollY       float64
+	barLengthX       float64
+	barLengthY       float64
+	barSlideX        float64
+	barSlideY        float64
+	isBarDisplay     bool
+	BarDisplayFrame  int
+	currentCombo     int
+	currentComboTick int
+	maxComboTick     int = 600 // 60FPSで10秒
+	rainbowIndex     int = 0
 
 	// messages []message
 	displayMessages []messages.MessageInterface

@@ -8,6 +8,7 @@ import (
 	"github.com/krile136/mineSweeper/store"
 )
 
+// テキストを描画する
 func DrawText(target *ebiten.Image, str string, x, y int, size string, clr color.Color) {
 	switch size {
 	case "L":
@@ -17,6 +18,11 @@ func DrawText(target *ebiten.Image, str string, x, y int, size string, clr color
 	case "S":
 		text.Draw(target, str, store.Data.Font.Small, x, y, clr)
 	}
+}
+
+func DrawTextAtCenter(target *ebiten.Image, str string, x, y int, size string, clr color.Color) {
+  var strLength int = Length(str, size)
+  DrawText(target, str, x - strLength /2, y, size, clr)
 }
 
 func Length(message string, size string) int {

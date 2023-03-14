@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/krile136/mineSweeper/internal/draw"
 	"github.com/krile136/mineSweeper/internal/text"
 	"github.com/krile136/mineSweeper/store"
 )
 
 func (m *MineSweeper) Draw(screen *ebiten.Image) {
+
 	// 各ブロックを表示
 	c := 1.0
 	p := 32
@@ -109,17 +111,24 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 
 	// 文字を描画
 	var playerTextFromCenter int = 170
+	var HpString string = fmt.Sprintf(" %d/%d", player.Hp(), player.MaxHp())
 	text.DrawText(screen, fmt.Sprintf("Lv %d", player.Lv()), int(center)-60, 20, "S", store.Data.Color.Black)
 	text.DrawText(screen, "HP", int(center)-playerTextFromCenter, 30, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d/%d", player.Hp(), player.MaxHp()), int(center)-playerTextFromCenter, 45, "M", store.Data.Color.Black)
+	text.DrawText(screen, HpString, int(center)-playerTextFromCenter, 45, "M", store.Data.Color.Black)
 	text.DrawText(screen, "NEXT", int(center)-playerTextFromCenter, 70, "M", store.Data.Color.Black)
 	text.DrawText(screen, fmt.Sprintf(" %d", player.NextExp()), int(center)-playerTextFromCenter, 85, "M", store.Data.Color.Black)
 
 	var enemyTextFromCenter int = 100
-	HpStringLength := text.Length(fmt.Sprintf(" %d/%d", enemy.Hp(), enemy.MaxHp()), "M")
 	text.DrawText(screen, fmt.Sprintf("Lv %d", enemy.Lv()), int(center)+40, 20, "S", store.Data.Color.Black)
 	text.DrawText(screen, "HP", int(center)+enemyTextFromCenter, 30, "M", store.Data.Color.Black)
-	text.DrawText(screen, fmt.Sprintf(" %d/%d", enemy.Hp(), enemy.MaxHp()), int(center)+45+HpStringLength, 45, "M", store.Data.Color.Black)
+	text.DrawText(screen, fmt.Sprintf(" %d/%d", enemy.Hp(), enemy.MaxHp()), int(center)+enemyTextFromCenter, 45, "M", store.Data.Color.Black)
+
+	// コンボ数を描画
+	if currentCombo > 1 {
+		var comboNumber string = fmt.Sprintf("%d", currentCombo)
+		text.DrawText(screen, comboNumber, 10, 70, "M", getRainbow())
+		text.DrawText(screen, "combo!!", text.Length(comboNumber, "M")+20, 70, "S", getRainbow())
+	}
 
 	// 爆発を描画
 	explodes.Draw(screen)
@@ -129,4 +138,7 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 		value, x, y, crl := v.GetFieldForDraw()
 		text.DrawText(screen, value, x, y, "M", crl)
 	}
+
+	// FPSを表示する
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %d", int(ebiten.CurrentFPS())))
 }

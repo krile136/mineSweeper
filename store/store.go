@@ -28,7 +28,7 @@ type Store struct {
 func (s *Store) Init() error {
 	Data.Layout.OutsideWidth = 640
 	Data.Layout.OutsideHeight = 480
-	Data.Layout.BattleField = 100 
+	Data.Layout.BattleField = 100
 
 	tempScrollCorrectiveValue := 1
 	Data.Env.ScrollCorrectionValue = tempScrollCorrectiveValue
@@ -49,6 +49,7 @@ func (s *Store) Init() error {
 	Data.Color.Yellow = color.RGBA{255, 255, 0, 255}
 	Data.Color.Cyan = color.RGBA{0, 255, 255, 255}
 	Data.Color.Magenta = color.RGBA{255, 0, 255, 255}
+	Data.Color.Purple = color.RGBA{128, 0, 128, 255}
 
 	return nil
 }
@@ -85,6 +86,7 @@ type Color struct {
 	Yellow  color.Color
 	Cyan    color.Color
 	Magenta color.Color
+	Purple  color.Color
 }
 
 func loadFont() (font.Face, font.Face, font.Face, error) {

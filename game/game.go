@@ -31,8 +31,7 @@ func NewGame() (*Game, error) {
 	}
 
 	// レイアウト設定
-	// game.Layout(store.Data.Layout.OutsideWidth, store.Data.Layout.OutsideHeight)
-	game.Layout(640, 480)
+	game.Layout(store.Data.Layout.OutsideWidth, store.Data.Layout.OutsideHeight)
 
 	// 画像リソース読み込み
 	go func() {

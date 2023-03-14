@@ -40,6 +40,7 @@ func initCharacterSlice() {
 	// モンスターに関する初期値をセット
 	setInitialEnemySlice(character.Slime, 1)
 	setEnemySlice(character.Slime, 3)
+	setEnemySlice(character.Slime, 99)
 }
 
 // プレイヤーに関するデータを詰める

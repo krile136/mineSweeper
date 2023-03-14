@@ -3,7 +3,6 @@ package minesweeper
 import (
 	"fmt"
 	"math"
-	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -84,60 +83,10 @@ func (m *MineSweeper) Update() error {
 	// クリック処理の前提条件として、マウスY座標がbattleFieldより下であること
 	if mouse_y > store.Data.Layout.BattleField {
 		// 左クリックしたときの処理
-		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
-			// クリックしたマスがフラグが立っていれば何もしない
-			if m.field[y][x] != flag {
-				position := y*m.rows + x
-				fmt.Printf("position: %d\n", position)
-				if inArray(m.bombsPosition, position) {
-					// 爆弾があるのでダメージ
-					m.field[y][x] = bomb
-					addExplodes(0)
-				} else {
-					GetExp = 0
-					m.searchAround(x, y)
-					for len(nextCheck) > 0 {
-						search_y := nextCheck[0] / m.rows
-						search_x := nextCheck[0] % m.rows
-						m.searchAround(search_x, search_y)
-					}
-					isLevelUp := false
-					isLevelUp, player = player.LevelUp(GetExp)
-					if isLevelUp {
-						messageStruct := MessageMap[message.LevelUp]
-						displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
-					}
-				}
-			}
-		}
+		m.leftClick(x, y)
 
 		// 右クリックしたときの処理
-		if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonRight) {
-			switch m.field[y][x] {
-			case close:
-				m.placeFlag(x, y)
-			case flag:
-				m.field[y][x] = close
-			case one, two, three, four, five, six, seven, eight:
-				GetExp = 0
-				m.searchAroundOnNumberField(x, y)
-				for len(nextCheck) > 0 {
-					search_y := nextCheck[0] / m.rows
-					search_x := nextCheck[0] % m.rows
-
-					m.searchAround(search_x, search_y)
-				}
-				isLevelUp := false
-				isLevelUp, player = player.LevelUp(GetExp)
-				if isLevelUp {
-					messageStruct := MessageMap[message.LevelUp]
-					displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
-				}
-
-			default:
-				// 何もしない
-			}
-		}
+		m.rightClick(x, y)
 	}
 
 	// バトル周りの処理
@@ -151,66 +100,11 @@ func (m *MineSweeper) Update() error {
 	}
 
 	if enemy.Turn() {
-		enemyDraw = enemyDraw.ExecuteMoving()
-		if enemyDraw.CanExecuteInvertAtTop() {
-			enemyDraw = enemyDraw.InvertDirection()
-			damage := enemy.GetDamageAmount(player)
-			player = enemy.AttackTo(player)
-			messageStruct := MessageMap[message.PlayerDamage]
-			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
-			displayMessages = append(displayMessages, messageStruct.New(value))
-		}
-		if enemyDraw.CanExecuteInvertAtBase() {
-			enemyDraw = enemyDraw.FinishTurn()
-			enemy = enemy.FinishTurn()
-		}
-
+		m.executeEnemyTurn()
 	}
 
 	if player.Turn() {
-		// タイマーが止まるときの専用処理
-		if enemy.StopTimer() {
-			if playerDraw.IsReturningToBase() {
-				playerDraw = playerDraw.ExecuteMoving()
-			} else {
-				player = player.FinishTurn()
-				playerDraw = playerDraw.FinishTurn()
-			}
-		} else {
-			playerDraw = playerDraw.ExecuteMoving()
-		}
-
-		if playerDraw.CanExecuteInvertAtTop() {
-			playerDraw = playerDraw.InvertDirection()
-			damage := player.GetDamageAmount(enemy)
-			enemy = player.AttackTo(enemy)
-			messageStruct := MessageMap[message.EnemyDamage]
-			var value string = strconv.FormatFloat(damage, 'f', 0, 64)
-			displayMessages = append(displayMessages, messageStruct.New(value))
-		}
-		if playerDraw.CanExecuteInvertAtBase() {
-			player = player.FinishTurn()
-			playerDraw = playerDraw.FinishTurn()
-			if enemy.StopTimer() {
-				// タイマーストップ状態ではプレイヤーのターン継続する（敵が現れたらターン終了）
-				player = player.InvertTurn()
-			}
-		}
-
-		if enemy.Dead() {
-			enemyDraw = enemyDraw.UpdateBlinking()
-			if enemyDraw.IsFinishDeadBlinking() {
-				setNextEnemy()
-			}
-		}
-		if enemy.Appearing() {
-			enemyDraw.ExecuteMoving()
-			if enemyDraw.CanFinishAppearing() {
-				enemy = enemy.ResetCondition()
-				enemy = enemy.FinishTurn()
-				player = player.InvertTurn()
-			}
-		}
+		m.executePlayerTurn()
 	}
 
 	if player.CanTurnOn() {
@@ -221,24 +115,104 @@ func (m *MineSweeper) Update() error {
 	}
 
 	// メッセージの更新処理
-	tempMessages := []messages.MessageInterface{}
-	for _, message := range displayMessages {
-		newMessage := message.Update()
-		if newMessage.IsExist() {
-			tempMessages = append(tempMessages, newMessage)
-		}
-	}
-	displayMessages = tempMessages
+	updateMessage()
 
 	// 爆発の更新処理
-	var finishedExplodes int = 0
-	explodes, finishedExplodes = explodes.Update()
-	for i := 0; i < finishedExplodes; i++ {
-		explodeDamage := float64(player.MaxHp()) * 0.05
-		messageStruct := MessageMap[message.PlayerDamage]
-		var value string = strconv.FormatFloat(explodeDamage, 'f', 0, 64)
-		displayMessages = append(displayMessages, messageStruct.New(value))
-		player = player.ReduceHp(explodeDamage)
+	updateExplodes()
+
+	// 虹色表示の管理インデックス更新
+	updateRainbowIndex()
+
+	// 現在のコンボ表示の更新
+	updateCurrentComboTick()
+
+	return nil
+}
+
+// 左クリックしたときの処理
+func (m *MineSweeper) leftClick(x, y int) error {
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+
+		// クリックしたマスがフラグが立っていれば何もしない
+		if m.field[y][x] == flag || m.field[y][x] == bomb {
+			return nil
+		}
+
+		position := y*m.rows + x
+		fmt.Printf("position: %d\n", position)
+		if inArray(m.bombsPosition, position) {
+			// 爆弾があるのでダメージ
+			m.field[y][x] = bomb
+			currentCombo = 0
+			addExplodes(0)
+		} else {
+			var getExp, getCombo int = m.searchAround(x, y)
+			for len(nextCheck) > 0 {
+				search_y := nextCheck[0] / m.rows
+				search_x := nextCheck[0] % m.rows
+				var exp, combo int = m.searchAround(search_x, search_y)
+				getExp += exp
+				getCombo += combo
+			}
+			isLevelUp := false
+			isLevelUp, player = player.LevelUp(getExp)
+
+			// 得られるコンボ数はまとめて開いても、一つ開いても１しか増えない
+			getCombo = int(math.Min(1, float64(getCombo)))
+			if getCombo > 0 {
+				currentComboTick = maxComboTick
+			}
+			currentCombo += getCombo
+			if isLevelUp {
+				messageStruct := MessageMap[message.LevelUp]
+				displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
+			}
+		}
+	}
+
+	return nil
+}
+
+// 右クリックしたときの処理
+func (m *MineSweeper) rightClick(x, y int) error {
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonRight) {
+		switch m.field[y][x] {
+		case close:
+			m.placeFlag(x, y)
+		case flag:
+			m.field[y][x] = close
+		case one, two, three, four, five, six, seven, eight:
+			var isExsistsBombs bool = m.searchAroundOnNumberField(x, y)
+			var getExp, getCombo int = 0, 0
+			for len(nextCheck) > 0 {
+				search_y := nextCheck[0] / m.rows
+				search_x := nextCheck[0] % m.rows
+				var exp, combo int = m.searchAround(search_x, search_y)
+				getExp += exp
+				getCombo += combo
+			}
+			isLevelUp := false
+			isLevelUp, player = player.LevelUp(getExp)
+
+			if isExsistsBombs {
+				// 爆弾を踏んだらコンボはリセットする
+				currentCombo = 0
+			} else {
+				// 得られるコンボ数はまとめて開いても、一つ開いても１しか増えない
+				getCombo = int(math.Min(1, float64(getCombo)))
+				if getCombo > 0 {
+					currentComboTick = maxComboTick
+				}
+				currentCombo += getCombo
+			}
+			if isLevelUp {
+				messageStruct := MessageMap[message.LevelUp]
+				displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
+			}
+
+		default:
+			// 何もしない
+		}
 	}
 
 	return nil

@@ -15,6 +15,7 @@ func main() {
 		panic(err)
 	}
 
+	// store.Data.Layoutの横幅と縦幅を一緒にしておくこと
 	ebiten.SetWindowSize(640, 480) 
 
 	if err := ebiten.RunGame(game); err != nil {
