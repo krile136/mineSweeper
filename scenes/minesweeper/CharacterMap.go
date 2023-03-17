@@ -32,15 +32,20 @@ func setNextEnemy() {
 	enemyDrawSlice = enemyDrawSlice[1:]
 }
 
+// 次のエネミーを持っているか判定する
+func hasNextEnemy() bool {
+	return len(enemyStatusSlice) != 0
+}
+
 // キャラクターの配列を初期化する
 func initCharacterSlice() {
 	// プレイヤーに関する初期値をセット
 	setPlayerSlice(character.Player, 1)
 
 	// モンスターに関する初期値をセット
-	setInitialEnemySlice(character.Slime, 99)
+	setInitialEnemySlice(character.Slime, 1)
 	setEnemySlice(character.Slime, 3)
-	setEnemySlice(character.Slime, 99)
+	setEnemySlice(character.Slime, 5)
 }
 
 // プレイヤーに関するデータを詰める
