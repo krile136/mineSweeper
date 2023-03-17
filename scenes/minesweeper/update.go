@@ -1,7 +1,6 @@
 package minesweeper
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -130,6 +129,9 @@ func (m *MineSweeper) Update() error {
 	// クリア文字の時間の更新をする
 	updateClearTick()
 
+	// すべてマスを開けたときの文字の表示を更新する
+	updateAllOpenTick()
+
 	if player.Dead() {
 		playerDraw = playerDraw.UpdateBlinking()
 		if playerDraw.IsFinishDeadBlinking() {
@@ -157,7 +159,6 @@ func (m *MineSweeper) leftClick(x, y int) error {
 		}
 
 		position := y*m.rows + x
-		fmt.Printf("position: %d\n", position)
 		if inArray(m.bombsPosition, position) {
 			// 爆弾があるのでダメージ
 			m.field[y][x] = bomb
@@ -186,6 +187,9 @@ func (m *MineSweeper) leftClick(x, y int) error {
 				messageStruct := MessageMap[message.LevelUp]
 				displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
 			}
+		}
+		if m.checkAllOpen() {
+			m.relocationBombs()
 		}
 	}
 
@@ -232,7 +236,9 @@ func (m *MineSweeper) rightClick(x, y int) error {
 				messageStruct := MessageMap[message.LevelUp]
 				displayMessages = append(displayMessages, messageStruct.New(messageStruct.String()))
 			}
-
+			if m.checkAllOpen() {
+				m.relocationBombs()
+			}
 		default:
 			// 何もしない
 		}
