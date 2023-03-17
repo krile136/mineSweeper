@@ -37,6 +37,29 @@ func (m *MineSweeper) placeBombs() error {
 	return nil
 }
 
+// 残された空いていないマス、フラグの置かれたマス、爆弾があったマスのすべてが
+// 爆弾のあるマスと一致しているか（＝通常のマインスイーパーにおける全て開いた状態）チェックする
+func (m *MineSweeper) checkAllOpen() bool {
+	for i := 0; i < m.rows; i++ {
+		for j := 0; j < m.columns; j++ {
+			status := m.field[i][j]
+			if status == close || status == flag || status == bomb {
+				position := i*m.rows + j
+				if !inArray(m.bombsPosition, position) {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+func (m *MineSweeper) relocationBombs() {
+	player = player.FullyRecovery()
+	m.placeBombs()
+	allOpenTick = maxOpenTick
+}
+
 func (m *MineSweeper) placeFlag(x, y int) error {
 
 	m.field[y][x] = flag
@@ -258,6 +281,14 @@ func updateCurrentComboTick() {
 	if currentComboTick == 0 && currentCombo > 0 {
 		currentCombo = 0
 	}
+}
+
+// 全て開けたときの文字表示を管理する時間を更新する
+func updateAllOpenTick() {
+	if allOpenTick < 0 {
+		return
+	}
+	allOpenTick -= 1
 }
 
 func getRainbow() (r color.Color) {

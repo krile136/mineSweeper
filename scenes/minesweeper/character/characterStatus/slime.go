@@ -112,6 +112,13 @@ func (s Slime) ReduceHp(damage float64) CharacterStatusInterface {
 	return new
 }
 
+// 全回復
+func (s Slime) FullyRecovery() CharacterStatusInterface {
+	new :=s 
+	new.hp = s.maxHp
+	return new
+}
+
 // バトルに関するステータスをセットする
 func (s Slime) setBattleStatus(
 	lv int,

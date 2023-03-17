@@ -25,6 +25,7 @@ type CharacterStatusInterface interface {
 	CanTurnOn() bool
 	ResetCondition() CharacterStatusInterface
 	ReduceHp(damage float64) CharacterStatusInterface
+	FullyRecovery() CharacterStatusInterface
 
 	SetInitialStatus() CharacterStatusInterface
 

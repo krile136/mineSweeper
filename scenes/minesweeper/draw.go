@@ -129,6 +129,12 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 		text.DrawText(screen, value, x, y, "M", crl)
 	}
 
+	// マスをすべて開けた時のメッセージを表示する
+	if(allOpenTick > 0){
+		var center_y int = store.Data.Layout.OutsideHeight / 2
+		text.DrawTextAtCenter(screen, "ALL OPEN BONUS", int(center), center_y-20, "L", getRainbow())
+		text.DrawTextAtCenter(screen, "FULL RECOVERY", int(center), center_y+20, "L", getRainbow())
+	}
 	// クリアしたときのメッセージを表示する
 	if isClear {
 		var center_y int = store.Data.Layout.OutsideHeight / 2

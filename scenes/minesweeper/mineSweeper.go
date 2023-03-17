@@ -67,8 +67,11 @@ var (
 	score int
 
 	isClear bool = false
-	clearTicks int = 9
+	clearTicks int = 0
 	maxClearTick = 180
+
+	allOpenTick int = 0 
+	maxOpenTick int = 180
 )
 
 func (m *MineSweeper) GetRouteType() route.RouteType {

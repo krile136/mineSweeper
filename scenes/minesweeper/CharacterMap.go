@@ -45,6 +45,20 @@ func initCharacterSlice() {
 	// モンスターに関する初期値をセット
 	setInitialEnemySlice(character.Slime, 1)
 	setEnemySlice(character.Slime, 3)
+	setEnemySlice(character.Slime, 3)
+	setEnemySlice(character.Slime, 3)
+	setEnemySlice(character.Slime, 3)
+	setEnemySlice(character.Slime, 3)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
+	setEnemySlice(character.Slime, 5)
 	setEnemySlice(character.Slime, 5)
 }
 

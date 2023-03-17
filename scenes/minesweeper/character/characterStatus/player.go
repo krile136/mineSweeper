@@ -107,6 +107,13 @@ func (p Player) ReduceHp(damage float64) CharacterStatusInterface {
 	return new
 }
 
+// 全回復
+func (p Player) FullyRecovery() CharacterStatusInterface {
+	new := p
+	new.hp = p.maxHp
+	return new
+}
+
 // バトルに関するステータスをセットする
 func (p Player) setBattleStatus(
 	lv int,
