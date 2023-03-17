@@ -6,5 +6,6 @@ const (
 	Title RouteType = iota
 	SelectCharacter
 	Ranking
+	GameOver
 	MineSweeper
 )

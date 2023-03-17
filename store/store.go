@@ -22,6 +22,7 @@ type Store struct {
 	Font        Font
 	Color       Color
 	MineSweeper MineSweeper
+	CurrentScore int
 }
 
 // シーン間共通変数の初期化
@@ -29,6 +30,8 @@ func (s *Store) Init() error {
 	Data.Layout.OutsideWidth = 640
 	Data.Layout.OutsideHeight = 480
 	Data.Layout.BattleField = 100
+
+	Data.CurrentScore = 0
 
 	tempScrollCorrectiveValue := 1
 	Data.Env.ScrollCorrectionValue = tempScrollCorrectiveValue

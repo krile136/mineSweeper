@@ -6,9 +6,11 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/krile136/mineSweeper/enum/route"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/explode"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
+	"github.com/krile136/mineSweeper/scenes/scene"
 	"github.com/krile136/mineSweeper/store"
 )
 
@@ -161,7 +163,15 @@ func (m *MineSweeper) executeEnemyTurn() error {
 		return nil
 	}
 
-	enemyDraw = enemyDraw.ExecuteMoving()
+	// プレイヤーがやられたとき（＝タイマー停止）
+	if player.StopTimer() {
+		if enemyDraw.IsReturningToBase() {
+			enemyDraw = enemyDraw.ExecuteMoving()
+		}
+	} else {
+		enemyDraw = enemyDraw.ExecuteMoving()
+	}
+
 	if enemyDraw.CanExecuteInvertAtTop() {
 		enemyDraw = enemyDraw.InvertDirection()
 		damage := enemy.GetDamageAmount(player)
@@ -173,6 +183,20 @@ func (m *MineSweeper) executeEnemyTurn() error {
 	if enemyDraw.CanExecuteInvertAtBase() {
 		enemyDraw = enemyDraw.FinishTurn()
 		enemy = enemy.FinishTurn()
+		if player.StopTimer() {
+			// プレイヤーがこの条件のときは敵にやられた時
+			enemy = enemy.InvertTurn()
+		}
+	}
+
+	if player.Dead() {
+		playerDraw = playerDraw.UpdateBlinking()
+		if playerDraw.IsFinishDeadBlinking() {
+			// プレイヤーがやられたときの点滅終了時
+			// 現在のスコアを保存してゲームオーバー画面へ
+			store.Data.CurrentScore = score
+			scene.RouteType = route.GameOver
+		}
 	}
 
 	return nil

@@ -155,6 +155,7 @@ func (m *MineSweeper) leftClick(x, y int) error {
 				getCombo += combo
 			}
 			isLevelUp := false
+			score += getExp
 			isLevelUp, player = player.LevelUp(getExp)
 
 			// 得られるコンボ数はまとめて開いても、一つ開いても１しか増えない
@@ -192,6 +193,7 @@ func (m *MineSweeper) rightClick(x, y int) error {
 				getCombo += combo
 			}
 			isLevelUp := false
+			score += getExp
 			isLevelUp, player = player.LevelUp(getExp)
 
 			if isExsistsBombs {

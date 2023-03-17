@@ -38,7 +38,7 @@ func initCharacterSlice() {
 	setPlayerSlice(character.Player, 1)
 
 	// モンスターに関する初期値をセット
-	setInitialEnemySlice(character.Slime, 1)
+	setInitialEnemySlice(character.Slime, 99)
 	setEnemySlice(character.Slime, 3)
 	setEnemySlice(character.Slime, 99)
 }

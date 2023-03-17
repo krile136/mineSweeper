@@ -1,6 +1,8 @@
 package characterDraw
 
-import "github.com/krile136/mineSweeper/store"
+import (
+	"github.com/krile136/mineSweeper/store"
+)
 
 type Player struct {
 	*abstractCharacterDraw
@@ -65,7 +67,7 @@ func (p Player) SetInitialDraw() CharacterDrawInterface {
 func (p Player) defaultField() (positionX, positionY, direction, difference float64) {
 	var center float64 = float64(store.Data.Layout.OutsideWidth) / 2
 	positionX = center - p.getDiffFromCenterToCharacter()
-	positionY = p.getCharacterYPosition() 
+	positionY = p.getCharacterYPosition()
 	direction = 1
 	difference = 0
 	return

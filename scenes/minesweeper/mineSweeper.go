@@ -64,6 +64,7 @@ var (
 	enemyDraw  characterDraw.CharacterDrawInterface
 
 	GetExp int
+	score int
 )
 
 func (m *MineSweeper) GetRouteType() route.RouteType {

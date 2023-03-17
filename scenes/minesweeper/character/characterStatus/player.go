@@ -21,6 +21,7 @@ func (p Player) AttackTo(target CharacterStatusInterface) CharacterStatusInterfa
 	damage := p.calcDamage(p.attack, target.getDefense())
 
 	newTarget := target.ReduceHp(damage)
+
 	return newTarget
 }
 
