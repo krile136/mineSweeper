@@ -16,7 +16,6 @@ type Ranking struct {
 }
 
 func (r *Ranking) Update() error {
-
 	return nil
 }
 
@@ -37,7 +36,6 @@ func (r *Ranking) Draw(screen *ebiten.Image) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	var centerX float64 = float64(store.Data.Layout.OutsideWidth) / 2
 	var hiscore string = fmt.Sprintf("Your high score : %d", resp.MyScore)

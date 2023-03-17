@@ -29,7 +29,7 @@ func (s Slime) CanFinishAppearing() bool {
 }
 
 func (s Slime) IsReturningToBase() bool {
-	return s.direction < 0
+	return s.direction > 0
 }
 
 func (s Slime) UpdateBlinking() CharacterDrawInterface {

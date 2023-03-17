@@ -32,7 +32,16 @@ func (t *Title) Update() error {
 			if inBetween(int(centerY)+127, my, int(centerY)+140+margin) {
 				scene.RouteType = route.Ranking
 			}
+
 		}
+
+		var gameover_length = text.Length("GameOver", "M")
+		if inBetween(int(centerX)-gameover_length/2-margin, mx, int(centerX)+gameover_length/2+margin) {
+			if inBetween(int(centerY)+167, my, int(centerY)+180+margin) {
+				scene.RouteType = route.GameOver
+			}
+		}
+
 	}
 	return nil
 }
@@ -47,6 +56,8 @@ func (t *Title) Draw(screen *ebiten.Image) {
 	text.DrawTextAtCenter(screen, "Start Game", int(centerX), int(centerY+100), "M", store.Data.Color.White)
 
 	text.DrawTextAtCenter(screen, "Ranking", int(centerX), int(centerY+140), "M", store.Data.Color.White)
+
+	text.DrawTextAtCenter(screen, "Gameover", int(centerX), int(centerY+180), "M", store.Data.Color.White)
 
 }
 

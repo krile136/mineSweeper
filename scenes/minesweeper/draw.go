@@ -73,30 +73,20 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 		store.Data.Layout.BattleField*2)
 
 	// キャラクターを描画
-	draw.DrawWithoutRect(
-		screen, player.Name(),
-		1,
-		playerDraw.CurrentPosition(),
-		playerDraw.PositionY(),
-		0)
+	if player.Dead() {
+		if playerDraw.IsShowBlinking() {
+			draw.DrawWithoutRect(screen, player.Name(), 1, playerDraw.CurrentPosition(), playerDraw.PositionY(), 0)
+		}
+	} else {
+		draw.DrawWithoutRect(screen, player.Name(), 1, playerDraw.CurrentPosition(), playerDraw.PositionY(), 0)
+	}
 
 	if enemy.Dead() {
 		if enemyDraw.IsShowBlinking() {
-			draw.DrawWithoutRect(
-				screen,
-				enemy.Name(),
-				1,
-				enemyDraw.CurrentPosition(),
-				enemyDraw.PositionY(),
-				0)
+			draw.DrawWithoutRect(screen,enemy.Name(),1,enemyDraw.CurrentPosition(),enemyDraw.PositionY(),0)
 		}
 	} else {
-		draw.DrawWithoutRect(
-			screen, enemy.Name(),
-			1,
-			enemyDraw.CurrentPosition(),
-			enemyDraw.PositionY(),
-			0)
+		draw.DrawWithoutRect(screen, enemy.Name(),1,enemyDraw.CurrentPosition(),enemyDraw.PositionY(),0)
 	}
 
 	// アクティブバーを描画
