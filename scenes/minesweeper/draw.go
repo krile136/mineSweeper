@@ -83,10 +83,10 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 
 	if enemy.Dead() {
 		if enemyDraw.IsShowBlinking() {
-			draw.DrawWithoutRect(screen,enemy.Name(),1,enemyDraw.CurrentPosition(),enemyDraw.PositionY(),0)
+			draw.DrawWithoutRect(screen, enemy.Name(), 1, enemyDraw.CurrentPosition(), enemyDraw.PositionY(), 0)
 		}
 	} else {
-		draw.DrawWithoutRect(screen, enemy.Name(),1,enemyDraw.CurrentPosition(),enemyDraw.PositionY(),0)
+		draw.DrawWithoutRect(screen, enemy.Name(), 1, enemyDraw.CurrentPosition(), enemyDraw.PositionY(), 0)
 	}
 
 	// アクティブバーを描画
@@ -127,6 +127,12 @@ func (m *MineSweeper) Draw(screen *ebiten.Image) {
 	for _, v := range displayMessages {
 		value, x, y, crl := v.GetFieldForDraw()
 		text.DrawText(screen, value, x, y, "M", crl)
+	}
+
+	// クリアしたときのメッセージを表示する
+	if isClear {
+		var center_y int = store.Data.Layout.OutsideHeight / 2
+		text.DrawTextAtCenter(screen, "C O N G R A T U L A T I O N !!", int(center), center_y, "L", getRainbow())
 	}
 
 	// FPSを表示する

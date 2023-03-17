@@ -144,7 +144,12 @@ func (m *MineSweeper) executePlayerTurn() {
 	if enemy.Dead() {
 		enemyDraw = enemyDraw.UpdateBlinking()
 		if enemyDraw.IsFinishDeadBlinking() {
-			setNextEnemy()
+			if hasNextEnemy() {
+				setNextEnemy()
+			} else {
+				// ゲームクリア
+				isClear = true
+			}
 		}
 	}
 	if enemy.Appearing() {
@@ -189,16 +194,6 @@ func (m *MineSweeper) executeEnemyTurn() error {
 		}
 	}
 
-	if player.Dead() {
-		playerDraw = playerDraw.UpdateBlinking()
-		if playerDraw.IsFinishDeadBlinking() {
-			// プレイヤーがやられたときの点滅終了時
-			// 現在のスコアを保存してゲームオーバー画面へ
-			store.Data.CurrentScore = score
-			scene.RouteType = route.GameOver
-		}
-	}
-
 	return nil
 }
 
@@ -240,6 +235,19 @@ func updateRainbowIndex() {
 	rainbowIndex += 1
 	if rainbowIndex > 6 {
 		rainbowIndex = 0
+	}
+}
+
+// クリア文字表示の時間をすすめる
+// 上限を超えたらゲームオーバー画面へ遷移する
+func updateClearTick() {
+	if isClear == false {
+		return
+	}
+	clearTicks += 1
+	if clearTicks >= maxClearTick {
+		store.Data.CurrentScore = score
+		scene.RouteType = route.GameOver
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/krile136/mineSweeper/enum/route"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/explode"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message"
 	"github.com/krile136/mineSweeper/scenes/minesweeper/message/messages"
@@ -126,11 +127,28 @@ func (m *MineSweeper) Update() error {
 	// 現在のコンボ表示の更新
 	updateCurrentComboTick()
 
+	// クリア文字の時間の更新をする
+	updateClearTick()
+
+	if player.Dead() {
+		playerDraw = playerDraw.UpdateBlinking()
+		if playerDraw.IsFinishDeadBlinking() {
+			// プレイヤーがやられたときの点滅終了時
+			// 現在のスコアを保存してゲームオーバー画面へ
+			store.Data.CurrentScore = score
+			scene.RouteType = route.GameOver
+		}
+	}
+
 	return nil
 }
 
 // 左クリックしたときの処理
 func (m *MineSweeper) leftClick(x, y int) error {
+	if player.Dead() || isClear == true {
+		return nil
+	}
+
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 
 		// クリックしたマスがフラグが立っていれば何もしない
@@ -176,6 +194,9 @@ func (m *MineSweeper) leftClick(x, y int) error {
 
 // 右クリックしたときの処理
 func (m *MineSweeper) rightClick(x, y int) error {
+	if player.Dead() || isClear == true {
+		return nil
+	}
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonRight) {
 		switch m.field[y][x] {
 		case close:

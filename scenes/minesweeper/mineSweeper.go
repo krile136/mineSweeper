@@ -65,6 +65,10 @@ var (
 
 	GetExp int
 	score int
+
+	isClear bool = false
+	clearTicks int = 9
+	maxClearTick = 180
 )
 
 func (m *MineSweeper) GetRouteType() route.RouteType {
