@@ -6,10 +6,10 @@ import (
 )
 
 var (
-	Is_just_changed bool = false
+	Is_just_changed bool = true 
 	Display         Scene
 	Next            Scene
-	RouteType       route.RouteType = route.Title
+	RouteType       route.RouteType = route.Login
 )
 
 type Scene interface {
