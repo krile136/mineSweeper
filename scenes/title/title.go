@@ -14,7 +14,9 @@ const routeType route.RouteType = route.Title
 type Title struct {
 }
 
+
 func (t *Title) Update() error {
+
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		var mx, my int = ebiten.CursorPosition()
 		var centerX float64 = float64(store.Data.Layout.OutsideWidth) / 2
@@ -35,12 +37,12 @@ func (t *Title) Update() error {
 
 		}
 
-		var gameover_length = text.Length("GameOver", "M")
-		if inBetween(int(centerX)-gameover_length/2-margin, mx, int(centerX)+gameover_length/2+margin) {
-			if inBetween(int(centerY)+167, my, int(centerY)+180+margin) {
-				scene.RouteType = route.GameOver
-			}
-		}
+		// var gameover_length = text.Length("GameOver", "M")
+		// if inBetween(int(centerX)-gameover_length/2-margin, mx, int(centerX)+gameover_length/2+margin) {
+		// 	if inBetween(int(centerY)+167, my, int(centerY)+180+margin) {
+		// 		scene.RouteType = route.GameOver
+		// 	}
+		// }
 
 	}
 	return nil
@@ -57,7 +59,7 @@ func (t *Title) Draw(screen *ebiten.Image) {
 
 	text.DrawTextAtCenter(screen, "Ranking", int(centerX), int(centerY+140), "M", store.Data.Color.White)
 
-	text.DrawTextAtCenter(screen, "Gameover", int(centerX), int(centerY+180), "M", store.Data.Color.White)
+	// text.DrawTextAtCenter(screen, "Gameover", int(centerX), int(centerY+180), "M", store.Data.Color.White)
 
 }
 

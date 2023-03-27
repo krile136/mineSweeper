@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/krile136/mineSweeper/enum/route"
 	"github.com/krile136/mineSweeper/scenes/gameover"
+	"github.com/krile136/mineSweeper/scenes/login"
 	"github.com/krile136/mineSweeper/scenes/minesweeper"
 	"github.com/krile136/mineSweeper/scenes/ranking"
 	"github.com/krile136/mineSweeper/scenes/scene"
@@ -11,6 +12,7 @@ import (
 
 var routeMap = map[route.RouteType]scene.Scene{
 	route.Title:       &title.Title{},
+	route.Login:       &login.Login{},
 	route.Ranking:     &ranking.Ranking{},
 	route.GameOver:    &gameover.Gameover{},
 	route.MineSweeper: &minesweeper.MineSweeper{},

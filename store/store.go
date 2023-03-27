@@ -35,6 +35,10 @@ func (s *Store) Init() error {
 
 	tempScrollCorrectiveValue := 1
 	Data.Env.ScrollCorrectionValue = tempScrollCorrectiveValue
+	Data.Env.AesKey = "645E739A7F9F162725C1533DC2C5E827"
+	Data.Env.UserId = -999
+	Data.Env.ApiToken = ""
+	Data.Env.OneTimeToken = ""
 
 	Data.MineSweeper.Rows = 20
 	Data.MineSweeper.Columns = 20
@@ -65,6 +69,10 @@ type Layout struct {
 
 type Env struct {
 	ScrollCorrectionValue int
+	UserId int
+	OneTimeToken string
+	ApiToken string
+	AesKey string
 }
 type MineSweeper struct {
 	Rows        int

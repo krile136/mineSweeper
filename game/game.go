@@ -2,13 +2,15 @@ package game
 
 import (
 	"math/rand"
+	"strconv"
+	"syscall/js"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/krile136/mineSweeper/internal/draw"
+	"github.com/krile136/mineSweeper/scenes/login"
 	"github.com/krile136/mineSweeper/scenes/scene"
-	"github.com/krile136/mineSweeper/scenes/title"
 	"github.com/krile136/mineSweeper/store"
 )
 
@@ -18,8 +20,8 @@ type Game struct {
 
 func NewGame() (*Game, error) {
 	// 初期画面としてtitle画面を設定
-	scene.Display = &title.Title{}
-	scene.Next = &title.Title{}
+	scene.Display = &login.Login{}
+	scene.Next = &login.Login{}
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -44,11 +46,17 @@ func NewGame() (*Game, error) {
 		close(game.resourceLoadedCh)
 	}()
 
+	js.Global().Set("setUserId", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		store.Data.Env.UserId, _ = strconv.Atoi(args[0].String())
+		store.Data.Env.OneTimeToken = args[1].String()
+		return nil
+	}))
+
 	return game, nil
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return outsideWidth,outsideHeight 
+	return outsideWidth, outsideHeight
 }
 
 func (g *Game) Update() error {

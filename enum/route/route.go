@@ -4,6 +4,7 @@ type RouteType int
 
 const (
 	Title RouteType = iota
+	Login
 	SelectCharacter
 	Ranking
 	GameOver
