@@ -14,6 +14,7 @@ const routeType route.RouteType = route.Login
 
 type Login struct {
 	getApiTokenCh chan error
+	getXrsfTokenCh chan error
 }
 
 var (
@@ -26,6 +27,7 @@ var (
 func NewLogin() *Login {
 	return &Login{
 		getApiTokenCh: make(chan error),
+		getXrsfTokenCh: make(chan error),
 	}
 }
 

@@ -7,16 +7,20 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/krile136/mineSweeper/enum/route"
 	"github.com/krile136/mineSweeper/internal/text"
+	"github.com/krile136/mineSweeper/scenes/scene"
 	"github.com/krile136/mineSweeper/store"
 )
 
 const routeType route.RouteType = route.GameOver
 
 type Gameover struct {
+	postScoreCh chan error
 }
 
-func (g *Gameover) Update() error {
-	return nil
+func NewGameover() *Gameover {
+	return &Gameover{
+		postScoreCh: make(chan error),
+	}
 }
 
 type Player struct {
@@ -28,6 +32,16 @@ type Player struct {
 type Response struct {
 	MyScore int      `json:"my_score"`
 	Player  []Player `json:"player"`
+}
+
+func (g *Gameover) Update() error {
+	if scene.Is_just_changed {
+		fmt.Println("start post")
+		g.postScoreCh = make(chan error)
+		go g.postScore()
+	}
+
+	return nil
 }
 
 func (g *Gameover) Draw(screen *ebiten.Image) {

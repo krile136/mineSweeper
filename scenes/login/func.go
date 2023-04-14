@@ -24,7 +24,6 @@ type ResponseBody struct {
 }
 
 func (l *Login) login() {
-
 	fmt.Println("start")
 	requestBody := RequestBody{
 		UserId:       store.Data.Env.UserId,
