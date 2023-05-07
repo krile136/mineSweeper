@@ -39,6 +39,11 @@ func hasNextEnemy() bool {
 
 // キャラクターの配列を初期化する
 func initCharacterSlice() {
+	playerStatusSlice = []characterStatus.CharacterStatusInterface{}
+	playerDrawSlice = []characterDraw.CharacterDrawInterface{}
+	enemyStatusSlice = []characterStatus.CharacterStatusInterface{}
+	enemyDrawSlice = []characterDraw.CharacterDrawInterface{}
+
 	// プレイヤーに関する初期値をセット
 	setPlayerSlice(character.Player, 1)
 

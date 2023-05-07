@@ -24,11 +24,6 @@ type RequestBody struct {
 	Data string `json:"data"`
 }
 
-type ResponseBody struct {
-	IsNewRecord  bool `json:"is_new_record"`
-	CurrentScore int  `json:"current_score"`
-	BestScore    int  `json:"best_score"`
-}
 
 func (g *Gameover) postScore() {
 	fmt.Println("start post score")
@@ -110,22 +105,11 @@ func (g *Gameover) postScore() {
 		decryptedString := string(decrypted)
 
 		// 復号したレスポンスデータから中身をパースする
-		responseBody := ResponseBody{}
-		err := json.Unmarshal([]byte(string(decryptedString)), &responseBody)
+		err := json.Unmarshal([]byte(string(decryptedString)), &g.resp)
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		// レスポンスデータを変数へ格納
-		is_new_record := responseBody.IsNewRecord
-		current_score := responseBody.CurrentScore
-		best_score := responseBody.BestScore
-
-		fmt.Println(is_new_record)
-		fmt.Println(current_score)
-		fmt.Println(best_score)
-
 		return
 	}
-
 }
