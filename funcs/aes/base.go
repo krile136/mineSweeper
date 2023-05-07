@@ -7,21 +7,16 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 
 	"github.com/krile136/mineSweeper/store"
 )
 
 // 暗号化する
-func Encrypt(text string) {
+func Encrypt(text string) (return_string string) {
 	plain := []byte(text)
-	fmt.Println("original text: ", text)
-	fmt.Println("plain text: ", plain)
 
 	var keyString string = store.Data.Env.AesKey
 	key, _ := hex.DecodeString(keyString)
-	fmt.Println("keyString: ", keyString)
-	fmt.Println("key: ", key)
 
 	iv, _ := GenerateIV()
 
@@ -31,11 +26,9 @@ func Encrypt(text string) {
 	encrypted := make([]byte, len(padded))
 	cbcEncrypter := cipher.NewCBCEncrypter(block, iv)
 	cbcEncrypter.CryptBlocks(encrypted, padded)
-	// return iv, encrypted, nil
-	fmt.Println("iv: ", iv)
-	fmt.Println("encoded to string iv:", hex.EncodeToString(iv))
-	fmt.Println("encrypted: ", encrypted)
-	fmt.Println("encoded Encrypted:", base64.StdEncoding.EncodeToString(encrypted))
+
+	return_string = hex.EncodeToString(iv) + "|" + base64.StdEncoding.EncodeToString(encrypted)
+	return
 }
 
 func GenerateIV() ([]byte, error) {

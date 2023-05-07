@@ -73,6 +73,7 @@ type Env struct {
 	OneTimeToken string
 	ApiToken string
 	AesKey string
+	XsrfToken string
 }
 type MineSweeper struct {
 	Rows        int
